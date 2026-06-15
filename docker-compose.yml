@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Persistence and Event Broker layer
+  redis:
+    image: redis:7-alpine
+    container_name: trace-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - trace-network
+    restart: always
+
+  # Application Server Node 1
+  app-node-1:
+    build: .
+    container_name: trace-app-1
+    environment:
+      - PORT=3000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=production
+      - CORS_ORIGIN=*
+      - RATE_LIMIT_WINDOW_MS=900000 # 15 mins
+      - RATE_LIMIT_MAX=100
+    depends_on:
+      - redis
+    networks:
+      - trace-network
+    restart: always
+
+  # Application Server Node 2
+  app-node-2:
+    build: .
+    container_name: trace-app-2
+    environment:
+      - PORT=3000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=production
+      - CORS_ORIGIN=*
+      - RATE_LIMIT_WINDOW_MS=900000 # 15 mins
+      - RATE_LIMIT_MAX=100
+    depends_on:
+      - redis
+    networks:
+      - trace-network
+    restart: always
+
+  # Nginx Load Balancer acting as Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: trace-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app-node-1
+      - app-node-2
+    networks:
+      - trace-network
+    restart: always
+
+volumes:
+  redis_data:
+
+networks:
+  trace-network:
+    driver: bridge
