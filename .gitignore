@@ -21,6 +21,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+.agent
+.agents
+graphify-out/
 
 # OS files
 .DS_Store
@@ -28,5 +31,3 @@ Thumbs.db
 
 # Docker files/directories (if needed to ignore specific local builds/data)
 redis_data/
-.agent
-.agents
