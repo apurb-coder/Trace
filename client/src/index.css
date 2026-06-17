@@ -420,6 +420,134 @@ html, body, #root {
   color: #ffffff !important;
 }
 
+/* Help Dialog Theme Overrides */
+.excalidraw .HelpDialog .Modal__content {
+  background-color: #faf8f5 !important;
+  border: 2px solid #1c1a22 !important;
+  border-radius: 8px 16px 8px 12px / 12px 8px 16px 8px !important;
+  box-shadow: 4px 4px 0px 0px #1c1a22 !important;
+  padding: 1.5rem !important;
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+  color: #1c1a22 !important;
+}
+
+/* Remove double border by resetting nested Island within Modals */
+.excalidraw .Modal .Island {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.excalidraw .HelpDialog .Dialog__title {
+  border-bottom: 2px solid #1c1a22 !important;
+}
+
+.excalidraw .HelpDialog h3,
+.excalidraw .HelpDialog h4 {
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+  color: #1c1a22 !important;
+  font-weight: 700 !important;
+}
 
 
+/* Close Button on Modal */
+.excalidraw .Modal__close {
+  border: 2px solid #1c1a22 !important;
+  border-radius: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
+  background-color: #faf8f5 !important;
+  color: #1c1a22 !important;
+  box-shadow: 2px 2px 0px 0px #1c1a22 !important;
+  transition: all 0.15s ease !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
+
+.excalidraw .Modal__close svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.excalidraw .Modal__close:hover {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .Modal__close:active {
+  transform: translate(0px, 0px) !important;
+  box-shadow: 0px 0px 0px 0px #1c1a22 !important;
+}
+
+/* Help Dialog Link Buttons in Header */
+.excalidraw .HelpDialog__btn {
+  border: 2px solid #1c1a22 !important;
+  border-radius: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
+  background-color: #faf8f5 !important;
+  color: #1c1a22 !important;
+  box-shadow: 2px 2px 0px 0px #1c1a22 !important;
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+  font-weight: 600 !important;
+  transition: all 0.15s ease !important;
+}
+
+.excalidraw .HelpDialog__btn:hover {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .HelpDialog__btn:active {
+  transform: translate(0px, 0px) !important;
+  box-shadow: 0px 0px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .HelpDialog__btn svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Islands / Containers inside Help Dialog */
+.excalidraw .HelpDialog__island-content {
+  border: 2px solid #1c1a22 !important;
+  border-radius: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
+  background-color: #ffffff !important;
+  overflow: hidden !important;
+}
+
+.excalidraw .HelpDialog__shortcut {
+  border-bottom: 2px solid #1c1a22 !important;
+  color: #1c1a22 !important;
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+}
+
+.excalidraw .HelpDialog__shortcut:last-child {
+  border-bottom: none !important;
+}
+
+/* Key Badges */
+.excalidraw .HelpDialog__key {
+  background-color: #faf8f5 !important;
+  border: 2px solid #1c1a22 !important;
+  border-radius: 4px 6px 4px 6px / 6px 4px 6px 4px !important;
+  color: #1c1a22 !important;
+  box-shadow: 1px 1px 0px 0px #1c1a22 !important;
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.7rem !important;
+  padding: 4px 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hide the external link buttons header in Help Dialog */
+.excalidraw .HelpDialog__header {
+  display: none !important;
+}
 
