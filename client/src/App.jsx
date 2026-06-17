@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import ForgotPassword from './components/ForgotPassword';
@@ -14,7 +15,7 @@ export default function App() {
     role: 'Engineer',
     avatar: 'pencil'
   });
-  const [currentPage, setCurrentPage] = useState('workspace'); // default to workspace for instant demo, user can go to login/signup
+  const [currentPage, setCurrentPage] = useState('landing');
   const [activeRoom, setActiveRoom] = useState(null);
 
   const handleLogin = (userData) => {
@@ -39,11 +40,23 @@ export default function App() {
   const handleLogout = () => {
     setUser(null);
     setActiveRoom(null);
-    setCurrentPage('login');
+    setCurrentPage('landing');
   };
 
   const handleSelectRoom = (room) => {
     setActiveRoom(room);
+    setCurrentPage('whiteboard');
+  };
+
+  const handleStartGuestDrawing = () => {
+    const guestRoom = {
+      id: `guest-${Date.now()}`,
+      name: 'Guest Sketchbook',
+      updated: 'Just now',
+      members: ['G'],
+      gridType: 'grid'
+    };
+    setActiveRoom(guestRoom);
     setCurrentPage('whiteboard');
   };
 
@@ -53,6 +66,15 @@ export default function App() {
 
   // State router
   switch (currentPage) {
+    case 'landing':
+      return (
+        <LandingPage
+          user={user}
+          onNavigate={setCurrentPage}
+          onStartGuestDrawing={handleStartGuestDrawing}
+        />
+      );
+
     case 'login':
       return <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
     
@@ -86,11 +108,18 @@ export default function App() {
         <Whiteboard
           room={activeRoom}
           user={user}
-          onBack={() => setCurrentPage('workspace')}
+          onBack={() => setCurrentPage(user ? 'workspace' : 'landing')}
         />
       );
     
     default:
-      return <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
+      return (
+        <LandingPage
+          user={user}
+          onNavigate={setCurrentPage}
+          onStartGuestDrawing={handleStartGuestDrawing}
+        />
+      );
   }
 }
+
