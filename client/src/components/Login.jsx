@@ -89,9 +89,13 @@ export default function Login({ onLogin, onNavigate }) {
               <input type="checkbox" className="accent-accent w-4 h-4 cursor-pointer" defaultChecked />
               <span className="text-ink-muted">Keep me signed in</span>
             </label>
-            <a href="#forgot" className="text-accent-cyan hover:underline decoration-wavy">
+            <button
+              type="button"
+              onClick={() => onNavigate('forgot-password')}
+              className="text-accent-cyan hover:underline decoration-wavy cursor-pointer bg-transparent border-none p-0 font-hand"
+            >
               Forgot pass?
-            </a>
+            </button>
           </div>
 
           <button

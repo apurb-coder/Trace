@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import ForgotPassword from './components/ForgotPassword';
 import Workspace from './components/Workspace';
 import Profile from './components/Profile';
 import Whiteboard from './components/Whiteboard';
@@ -57,6 +58,9 @@ export default function App() {
     
     case 'signup':
       return <Signup onRegister={handleRegister} onNavigate={setCurrentPage} />;
+    
+    case 'forgot-password':
+      return <ForgotPassword onNavigate={setCurrentPage} />;
     
     case 'workspace':
       return (

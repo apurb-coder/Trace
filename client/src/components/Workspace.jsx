@@ -124,7 +124,8 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
               placeholder="Search your sketchy rooms..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full input-sketchy font-hand text-base pl-12 pr-4 bg-white"
+              className="w-full input-sketchy font-hand text-base pr-4 bg-white"
+              style={{ paddingLeft: '3rem' }}
             />
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-muted" size={20} />
           </div>
