@@ -256,13 +256,8 @@ html, body, #root {
   --icon-fill-color: #ffffff !important;
 }
 
-/* Hamburger, Zoom % & Undo/Redo theme overrides */
-.excalidraw .main-menu-trigger,
-.excalidraw .reset-zoom-button,
-.excalidraw button[aria-label^="Undo"],
-.excalidraw button[aria-label^="Redo"],
-.excalidraw button[title^="Undo"],
-.excalidraw button[title^="Redo"] {
+/* Standalone Hamburger Menu Trigger */
+.excalidraw .main-menu-trigger {
   border: 2px solid #1c1a22 !important;
   border-radius: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
   background-color: #faf8f5 !important;
@@ -277,58 +272,154 @@ html, body, #root {
   height: var(--button-size, 2.5rem) !important;
 }
 
-.excalidraw .reset-zoom-button {
-  width: auto !important;
-  padding: 0 12px !important;
-}
-
-.excalidraw button[aria-label^="Undo"],
-.excalidraw button[aria-label^="Redo"],
-.excalidraw button[title^="Undo"],
-.excalidraw button[title^="Redo"] {
-  border-radius: 12px 12px 6px 6px / 6px 6px 12px 12px !important;
-}
-
-.excalidraw .main-menu-trigger:hover,
-.excalidraw .reset-zoom-button:hover,
-.excalidraw button[aria-label^="Undo"]:not([disabled]):hover,
-.excalidraw button[aria-label^="Redo"]:not([disabled]):hover,
-.excalidraw button[title^="Undo"]:not([disabled]):hover,
-.excalidraw button[title^="Redo"]:not([disabled]):hover {
+.excalidraw .main-menu-trigger:hover {
   background-color: #e0533c !important;
   color: #ffffff !important;
   transform: translate(-1px, -1px) !important;
   box-shadow: 3px 3px 0px 0px #1c1a22 !important;
 }
 
-.excalidraw .main-menu-trigger:active,
-.excalidraw .reset-zoom-button:active,
-.excalidraw button[aria-label^="Undo"]:not([disabled]):active,
-.excalidraw button[aria-label^="Redo"]:not([disabled]):active,
-.excalidraw button[title^="Undo"]:not([disabled]):active,
-.excalidraw button[title^="Redo"]:not([disabled]):active {
+.excalidraw .main-menu-trigger:active {
   transform: translate(0px, 0px) !important;
   box-shadow: 0px 0px 0px 0px #1c1a22 !important;
 }
 
-.excalidraw .main-menu-trigger svg,
-.excalidraw button[aria-label^="Undo"] svg,
-.excalidraw button[aria-label^="Redo"] svg,
-.excalidraw button[title^="Undo"] svg,
-.excalidraw button[title^="Redo"] svg {
+.excalidraw .main-menu-trigger svg {
   color: currentColor !important;
   stroke: currentColor !important;
 }
 
-.excalidraw button[aria-label^="Undo"]:disabled,
-.excalidraw button[aria-label^="Redo"]:disabled,
-.excalidraw button[title^="Undo"]:disabled,
-.excalidraw button[title^="Redo"]:disabled {
+/* Zoom Actions & Undo-Redo Button Containers (Grouped Panels) */
+.excalidraw .zoom-actions,
+.excalidraw .undo-redo-buttons {
+  border: 2px solid #1c1a22 !important;
+  border-radius: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
+  background-color: #faf8f5 !important;
+  box-shadow: 2px 2px 0px 0px #1c1a22 !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+/* Individual buttons inside Zoom Actions and Undo-Redo Groups */
+.excalidraw .zoom-actions button,
+.excalidraw .undo-redo-buttons button {
+  border: none !important;
+  background-color: transparent !important;
+  color: #1c1a22 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: var(--button-size, 2.5rem) !important;
+  height: var(--button-size, 2.5rem) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+.excalidraw .zoom-actions .reset-zoom-button {
+  width: auto !important;
+  padding: 0 12px !important;
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* Dividers inside the groups */
+.excalidraw .zoom-actions .zoom-out-button,
+.excalidraw .zoom-actions .reset-zoom-button {
+  border-right: 2px solid #1c1a22 !important;
+}
+
+.excalidraw .undo-redo-buttons .undo-button-container {
+  border-right: 2px solid #1c1a22 !important;
+}
+
+/* Hover, Active, Disabled states for button groups */
+.excalidraw .zoom-actions button:not([disabled]):hover,
+.excalidraw .undo-redo-buttons button:not([disabled]):hover {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+}
+
+.excalidraw .zoom-actions button:not([disabled]):active,
+.excalidraw .undo-redo-buttons button:not([disabled]):active {
+  background-color: #c4402a !important;
+  color: #ffffff !important;
+}
+
+.excalidraw .zoom-actions button svg,
+.excalidraw .undo-redo-buttons button svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.excalidraw .zoom-actions button:disabled,
+.excalidraw .undo-redo-buttons button:disabled {
   opacity: 0.4 !important;
   cursor: not-allowed !important;
-  box-shadow: none !important;
-  transform: none !important;
+  background-color: transparent !important;
+  color: #1c1a22 !important;
 }
+
+/* Standalone Sidebar Trigger (Library) & Help Button */
+.excalidraw .sidebar-trigger,
+.excalidraw .help-icon {
+  border: 2px solid #1c1a22 !important;
+  border-radius: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
+  background-color: #faf8f5 !important;
+  color: #1c1a22 !important;
+  box-shadow: 2px 2px 0px 0px #1c1a22 !important;
+  transition: all 0.15s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: var(--lg-button-size, 2.5rem) !important;
+  width: var(--lg-button-size, 2.5rem) !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.excalidraw .sidebar-trigger {
+  width: auto !important;
+  padding: 0 12px !important;
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.excalidraw .sidebar-trigger svg,
+.excalidraw .help-icon svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.excalidraw .sidebar-trigger:hover,
+.excalidraw .help-icon:hover {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .sidebar-trigger:active,
+.excalidraw .help-icon:active {
+  transform: translate(0px, 0px) !important;
+  box-shadow: 0px 0px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .sidebar-trigger.active {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+  transform: translate(0px, 0px) !important;
+  box-shadow: 0px 0px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .sidebar-trigger.active:hover {
+  background-color: #c4402a !important;
+  color: #ffffff !important;
+}
+
 
 
 

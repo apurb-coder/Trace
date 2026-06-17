@@ -28,6 +28,7 @@ graphify-out/
 .codex
 PRODUCT.md
 DESIGN.md
+EXCALIDRAW_CUSTOMIZATION.md
 # OS files
 .DS_Store
 Thumbs.db
