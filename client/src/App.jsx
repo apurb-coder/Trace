@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -15,8 +16,8 @@ export default function App() {
     role: 'Engineer',
     avatar: 'pencil'
   });
-  const [currentPage, setCurrentPage] = useState('landing');
   const [activeRoom, setActiveRoom] = useState(null);
+  const navigate = useNavigate();
 
   const handleLogin = (userData) => {
     setUser({
@@ -24,7 +25,7 @@ export default function App() {
       role: 'Engineer',
       avatar: 'pencil'
     });
-    setCurrentPage('workspace');
+    navigate('/workspace');
   };
 
   const handleRegister = (userData) => {
@@ -34,18 +35,18 @@ export default function App() {
       role: userData.role,
       avatar: 'rocket'
     });
-    setCurrentPage('workspace');
+    navigate('/workspace');
   };
 
   const handleLogout = () => {
     setUser(null);
     setActiveRoom(null);
-    setCurrentPage('landing');
+    navigate('/');
   };
 
   const handleSelectRoom = (room) => {
     setActiveRoom(room);
-    setCurrentPage('whiteboard');
+    navigate('/whiteboard');
   };
 
   const handleStartGuestDrawing = () => {
@@ -57,70 +58,116 @@ export default function App() {
       gridType: 'grid'
     };
     setActiveRoom(guestRoom);
-    setCurrentPage('whiteboard');
+    navigate('/whiteboard');
   };
 
   const handleUpdateUser = (updatedUser) => {
     setUser(updatedUser);
   };
 
-  // State router
-  switch (currentPage) {
-    case 'landing':
-      return (
-        <LandingPage
-          user={user}
-          onNavigate={setCurrentPage}
-          onStartGuestDrawing={handleStartGuestDrawing}
-        />
-      );
+  // Helper for compatibility with legacy onNavigate prop
+  const handleNavigate = (page) => {
+    switch (page) {
+      case 'landing':
+        navigate('/');
+        break;
+      case 'login':
+        navigate('/login');
+        break;
+      case 'signup':
+        navigate('/signup');
+        break;
+      case 'forgot-password':
+        navigate('/forgot-password');
+        break;
+      case 'workspace':
+        navigate('/workspace');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'whiteboard':
+        navigate('/whiteboard');
+        break;
+      default:
+        navigate('/');
+    }
+  };
 
-    case 'login':
-      return <Login onLogin={handleLogin} onNavigate={setCurrentPage} />;
-    
-    case 'signup':
-      return <Signup onRegister={handleRegister} onNavigate={setCurrentPage} />;
-    
-    case 'forgot-password':
-      return <ForgotPassword onNavigate={setCurrentPage} />;
-    
-    case 'workspace':
-      return (
-        <Workspace
-          user={user}
-          onSelectRoom={handleSelectRoom}
-          onLogout={handleLogout}
-          onNavigate={setCurrentPage}
-        />
-      );
-    
-    case 'profile':
-      return (
-        <Profile
-          user={user}
-          onUpdateUser={handleUpdateUser}
-          onNavigate={setCurrentPage}
-        />
-      );
-    
-    case 'whiteboard':
-      return (
-        <Whiteboard
-          room={activeRoom}
-          user={user}
-          onBack={() => setCurrentPage(user ? 'workspace' : 'landing')}
-          onNavigate={setCurrentPage}
-        />
-      );
-    
-    default:
-      return (
-        <LandingPage
-          user={user}
-          onNavigate={setCurrentPage}
-          onStartGuestDrawing={handleStartGuestDrawing}
-        />
-      );
-  }
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <LandingPage
+            user={user}
+            onNavigate={handleNavigate}
+            onStartGuestDrawing={handleStartGuestDrawing}
+          />
+        }
+      />
+      <Route
+        path="/login"
+        element={<Login onLogin={handleLogin} onNavigate={handleNavigate} />}
+      />
+      <Route
+        path="/signup"
+        element={<Signup onRegister={handleRegister} onNavigate={handleNavigate} />}
+      />
+      <Route
+        path="/forgot-password"
+        element={<ForgotPassword onNavigate={handleNavigate} />}
+      />
+      <Route
+        path="/workspace"
+        element={
+          user ? (
+            <Workspace
+              user={user}
+              onSelectRoom={handleSelectRoom}
+              onLogout={handleLogout}
+              onNavigate={handleNavigate}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          user ? (
+            <Profile
+              user={user}
+              onUpdateUser={handleUpdateUser}
+              onNavigate={handleNavigate}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/whiteboard"
+        element={
+          <Whiteboard
+            room={
+              activeRoom || {
+                id: 'guest-direct',
+                name: 'Guest Sketchbook',
+                updated: 'Just now',
+                members: ['G'],
+                gridType: 'grid'
+              }
+            }
+            user={user}
+            onBack={() => navigate(user ? '/workspace' : '/')}
+            onNavigate={handleNavigate}
+          />
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 

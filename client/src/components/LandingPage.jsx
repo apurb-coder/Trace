@@ -79,25 +79,6 @@ export default function LandingPage({ user, onNavigate, onStartGuestDrawing }) {
         </div>
 
         {/* Account Quick Links */}
-        {!user && (
-          <div className="flex flex-col sm:flex-row items-center gap-3 mb-16 p-4 border-sketchy bg-white/80 shadow-sketchy relative">
-            <span className="font-hand text-sm text-ink-muted">Want to save your boards and collaborate?</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => onNavigate('login')}
-                className="btn-sketchy py-1.5 px-4 text-xs bg-white flex items-center gap-1.5"
-              >
-                <LogIn size={14} /> SIGN IN
-              </button>
-              <button
-                onClick={() => onNavigate('signup')}
-                className="btn-sketchy btn-sketchy-cyan py-1.5 px-4 text-xs flex items-center gap-1.5"
-              >
-                SIGN UP
-              </button>
-            </div>
-          </div>
-        )}
 
         {user && (
           <div className="flex items-center gap-3 mb-16 p-3 border-sketchy bg-white/80 shadow-sketchy relative text-sm">
