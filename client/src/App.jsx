@@ -109,6 +109,7 @@ export default function App() {
           room={activeRoom}
           user={user}
           onBack={() => setCurrentPage(user ? 'workspace' : 'landing')}
+          onNavigate={setCurrentPage}
         />
       );
     

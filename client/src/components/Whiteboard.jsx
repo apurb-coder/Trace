@@ -3,7 +3,7 @@ import { Excalidraw } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin } from 'lucide-react';
 
-export default function Whiteboard({ room, onBack, user }) {
+export default function Whiteboard({ room, onBack, user, onNavigate }) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
   const [copied, setCopied] = useState(false);
   const [showCollabNotes, setShowCollabNotes] = useState(true);
@@ -48,12 +48,35 @@ export default function Whiteboard({ room, onBack, user }) {
       {/* Top Header Overlay Bar (Sketchy styled book spine) */}
       <header className="z-10 flex items-center justify-between px-4 py-3 bg-white border-b-3 border-ink shadow-sm">
         <div className="flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="btn-sketchy bg-white text-ink py-1 px-3 flex items-center gap-1 text-sm shadow-sm"
-          >
-            <ArrowLeft size={16} /> WORKSPACES
-          </button>
+          {user ? (
+            <button
+              onClick={onBack}
+              className="btn-sketchy bg-white text-ink py-1 px-3 flex items-center gap-1.5 text-sm shadow-sm"
+            >
+              <ArrowLeft size={16} /> WORKSPACE
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onBack}
+                className="btn-sketchy bg-white text-ink py-1 px-3 flex items-center gap-1.5 text-sm shadow-sm"
+              >
+                <ArrowLeft size={16} /> HOME
+              </button>
+              <button
+                onClick={() => onNavigate('login')}
+                className="btn-sketchy bg-white text-ink py-1 px-3 flex items-center gap-1.5 text-sm shadow-sm"
+              >
+                SIGN IN
+              </button>
+              <button
+                onClick={() => onNavigate('signup')}
+                className="btn-sketchy btn-sketchy-cyan py-1 px-3 flex items-center gap-1.5 text-sm shadow-sm"
+              >
+                SIGN UP
+              </button>
+            </div>
+          )}
           
           <div className="h-6 w-[2px] bg-ink/10 hidden md:block"></div>
 
