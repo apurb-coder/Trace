@@ -63,10 +63,10 @@ export async function saveRoomSnapshot(roomId, snapshot) {
 }
 
 /**
- * Merges a tldraw-structured changeset (diff) into the existing snapshot stored in Redis.
+ * Merges a excalidraw-structured changeset (diff) into the existing snapshot stored in Redis.
  * This ensures the catch-up state is kept complete.
  * 
- * tldraw diff structures:
+ * excalidraw diff structures:
  * {
  *   created: { [id]: record },
  *   updated: { [id]: [oldRecord, newRecord] or newRecord },
@@ -103,7 +103,7 @@ export async function patchRoomSnapshot(roomId, diff) {
     // 2. Process updates: modify existing records in snapshot
     if (updated && typeof updated === 'object') {
       Object.entries(updated).forEach(([id, change]) => {
-        // In tldraw, updated changes can be [oldRecord, newRecord] or just the new properties
+        // In excalidraw, updated changes can be [oldRecord, newRecord] or just the new properties
         if (Array.isArray(change)) {
           const [, newRecord] = change;
           snapshot.records[id] = { ...snapshot.records[id], ...newRecord };

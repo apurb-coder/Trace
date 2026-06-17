@@ -42,7 +42,7 @@ export async function handleIncomingMessage(socket, rawData) {
     console.log(`[WS Receive] Client: ${userId} | Room: ${roomId} | Event: ${type}`);
 
     switch (type) {
-      // client requests current full room snapshot (e.g. tldraw catch-up synchronization)
+      // client requests current full room snapshot (e.g. excalidraw catch-up synchronization)
       case 'INITIALIZE_ROOM': {
         const snapshot = await getRoomSnapshot(roomId);
         socket.send(JSON.stringify({

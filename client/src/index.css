@@ -167,3 +167,93 @@ html, body, #root {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-ink);
 }
+
+/* ==========================================
+   Excalidraw Theme Overrides
+   ========================================== */
+.excalidraw {
+  /* Fonts */
+  --ui-font: 'Playpen Sans', cursive, sans-serif !important;
+  
+  /* Brand/Primary Colors -> Highlighter Orange */
+  --color-primary: #e0533c !important;
+  --color-primary-hover: #c4402a !important;
+  --color-primary-darker: #c4402a !important;
+  --color-primary-darkest: #1c1a22 !important;
+  
+  /* Excalidraw Active Container/Text Variables */
+  --color-surface-primary-container: #e0533c !important;
+  --color-on-primary-container: #ffffff !important;
+  
+  /* Canvas Background */
+  --canvas-bg-color: #faf8f5 !important;
+  
+  /* Map default grays to warm paper & ink palette */
+  --color-gray-10: #faf8f5 !important; /* warm paper background */
+  --color-gray-20: #f4f0e6 !important; /* draft paper background */
+  --color-gray-30: #e5dfd3 !important; /* active selection background */
+  --color-gray-40: #575463 !important; /* pencil gray text */
+  --color-gray-50: #575463 !important;
+  --color-gray-60: #1c1a22 !important; /* ink text */
+  --color-gray-70: #1c1a22 !important;
+  --color-gray-80: #1c1a22 !important;
+  --color-gray-90: #1c1a22 !important;
+  --color-gray-100: #1c1a22 !important;
+  
+  /* Borders */
+  --border-width-thin: 2px !important;
+  --color-border-outline: #1c1a22 !important;
+  
+  /* Border Radii (Organic Hand-Drawn style) */
+  --border-radius-lg: 8px 16px 8px 12px / 12px 8px 16px 8px !important;
+  --border-radius-md: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
+  --border-radius-sm: 4px 8px 4px 6px / 6px 4px 8px 4px !important;
+}
+
+/* Force Playpen Sans typography for Excalidraw UI elements */
+.excalidraw .excalidraw-text,
+.excalidraw button,
+.excalidraw input,
+.excalidraw select,
+.excalidraw textarea,
+.excalidraw .layer-ui-trigger {
+  font-family: 'Playpen Sans', cursive, sans-serif !important;
+}
+
+/* Styling Excalidraw canvas controls with sketchy shadows */
+.excalidraw .Island,
+.excalidraw .Footer {
+  border: 2px solid #1c1a22 !important;
+  box-shadow: 3px 3px 0px 0px #1c1a22 !important;
+}
+
+/* Customize tool buttons inside the tool panel */
+.excalidraw .ToolIcon__keycap {
+  border: 1px solid #1c1a22 !important;
+  border-radius: 4px !important;
+  background-color: #faf8f5 !important;
+  color: #1c1a22 !important;
+}
+
+/* Color override for active tool selection */
+.excalidraw .ToolIcon:hover,
+.excalidraw .ToolIcon--selected {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+}
+
+.excalidraw .ToolIcon .ToolIcon_type_radio:checked + .ToolIcon__icon {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+}
+
+.excalidraw .ToolIcon .ToolIcon_type_radio:checked + .ToolIcon__icon svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+.excalidraw .ToolIcon.fillable .ToolIcon_type_radio:checked + .ToolIcon__icon {
+  --icon-fill-color: #ffffff !important;
+}
+
+

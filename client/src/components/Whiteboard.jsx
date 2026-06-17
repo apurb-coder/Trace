@@ -1,83 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Tldraw } from 'tldraw';
-import 'tldraw/tldraw.css';
-import { ArrowLeft, Users, Link2, Undo2, Redo2, Grid, Square, Circle, Type, Trash2, Send, Bookmark } from 'lucide-react';
+import React, { useState } from 'react';
+import { Excalidraw } from '@excalidraw/excalidraw';
+import '@excalidraw/excalidraw/index.css';
+import { ArrowLeft, Users, Link2, Send } from 'lucide-react';
 
 export default function Whiteboard({ room, onBack, user }) {
-  const [editor, setEditor] = useState(null);
+  const [excalidrawAPI, setExcalidrawAPI] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [gridMode, setGridMode] = useState(true);
   const [stickies, setStickies] = useState([
     { id: 1, author: 'Ada', text: 'Added the layout architecture sketch!', color: 'bg-accent-cyan/10' },
     { id: 2, author: 'Kai', text: 'Make sure we keep the whiteboard canvas clean and fast.', color: 'bg-accent/10' }
   ]);
   const [newStickyText, setNewStickyText] = useState('');
 
-  const handleMount = (editorInstance) => {
-    setEditor(editorInstance);
-    // Initialize default grid mode
-    editorInstance.setGridMode(gridMode);
+  const handleMount = (api) => {
+    setExcalidrawAPI(api);
   };
 
-  const toggleGrid = () => {
-    if (editor) {
-      const nextMode = !gridMode;
-      setGridMode(nextMode);
-      editor.setGridMode(nextMode);
-    }
-  };
 
-  const handleUndo = () => {
-    if (editor) editor.undo();
-  };
-
-  const handleRedo = () => {
-    if (editor) editor.redo();
-  };
-
-  const handleClear = () => {
-    if (editor && confirm('Wipe the entire sketchbook canvas?')) {
-      editor.selectAll();
-      const selected = editor.getSelectedShapeIds();
-      if (selected.length > 0) {
-        editor.deleteShapes(selected);
-      } else {
-        // Fallback: delete everything in the current page
-        const allShapeIds = Array.from(editor.getCurrentPageShapeIds());
-        editor.deleteShapes(allShapeIds);
-      }
-    }
-  };
-
-  const addCustomShape = (type) => {
-    if (!editor) return;
-    const { x, y } = editor.getViewportPageBounds();
-    const centerX = x + 300;
-    const centerY = y + 200;
-
-    if (type === 'rect') {
-      editor.createShape({
-        type: 'geo',
-        x: centerX,
-        y: centerY,
-        props: { geo: 'rectangle', w: 150, h: 100, text: 'Custom Rect' }
-      });
-    } else if (type === 'circle') {
-      editor.createShape({
-        type: 'geo',
-        x: centerX,
-        y: centerY,
-        props: { geo: 'ellipse', w: 120, h: 120, text: 'Custom Circle' }
-      });
-    } else if (type === 'text') {
-      editor.createShape({
-        type: 'text',
-        x: centerX,
-        y: centerY,
-        props: { text: 'Double click to edit text!' }
-      });
-    }
-  };
 
   const copyInvite = () => {
     navigator.clipboard.writeText(`https://trace.draw/room/${room?.id || 'ws-1'}`);
@@ -161,81 +100,34 @@ export default function Whiteboard({ room, onBack, user }) {
       {/* Main Split Window */}
       <div className="flex-grow flex relative overflow-hidden">
         
-        {/* Left Floating Panel: Sketchy Options */}
-        <div className="absolute left-4 top-4 z-10 w-52 bg-white border-sketchy shadow-sketchy p-4 flex flex-col gap-4">
-          <div>
-            <h3 className="font-sketch text-sm font-bold border-b border-dashed border-ink/20 pb-1 mb-2">
-              🗺️ CANVAS
-            </h3>
-            <button
-              onClick={toggleGrid}
-              className={`w-full py-1.5 px-2 text-xs border-sketchy-thin flex items-center justify-between transition-colors ${
-                gridMode ? 'bg-accent/15 border-accent' : 'bg-paper'
-              }`}
-            >
-              <span className="flex items-center gap-1"><Grid size={12} /> Toggle Grid</span>
-              <span className="font-mono">{gridMode ? 'ON' : 'OFF'}</span>
-            </button>
-          </div>
 
-          <div>
-            <h3 className="font-sketch text-sm font-bold border-b border-dashed border-ink/20 pb-1 mb-2">
-              ⚙️ ADD SHAPES
-            </h3>
-            <div className="grid grid-cols-3 gap-1">
-              <button
-                onClick={() => addCustomShape('rect')}
-                className="p-1.5 border-sketchy-thin bg-paper hover:bg-accent/10 flex flex-col items-center justify-center text-[10px]"
-                title="Add Rectangle"
-              >
-                <Square size={14} /> Rect
-              </button>
-              <button
-                onClick={() => addCustomShape('circle')}
-                className="p-1.5 border-sketchy-thin bg-paper hover:bg-accent/10 flex flex-col items-center justify-center text-[10px]"
-                title="Add Circle"
-              >
-                <Circle size={14} /> Circle
-              </button>
-              <button
-                onClick={() => addCustomShape('text')}
-                className="p-1.5 border-sketchy-thin bg-paper hover:bg-accent/10 flex flex-col items-center justify-center text-[10px]"
-                title="Add Text"
-              >
-                <Type size={14} /> Text
-              </button>
-            </div>
-          </div>
 
-          <button
-            onClick={handleClear}
-            className="w-full btn-sketchy border-accent text-accent py-1.5 text-xs flex items-center justify-center gap-1 hover:bg-accent/5"
-          >
-            <Trash2 size={12} /> WIPE SELECTED
-          </button>
-        </div>
 
-        {/* Bottom Floating Panel: Undo / Redo Snap Bar */}
-        <div className="absolute left-4 bottom-4 z-10 flex gap-2">
-          <button
-            onClick={handleUndo}
-            className="p-2 bg-white border-sketchy shadow-sketchy hover:bg-paper active:scale-95 transition-all"
-            title="Undo (Ctrl+Z)"
-          >
-            <Undo2 size={18} />
-          </button>
-          <button
-            onClick={handleRedo}
-            className="p-2 bg-white border-sketchy shadow-sketchy hover:bg-paper active:scale-95 transition-all"
-            title="Redo (Ctrl+Y)"
-          >
-            <Redo2 size={18} />
-          </button>
-        </div>
 
         {/* Core Whiteboard Canvas (Sacred Canvas: Keep it clean and un-styled) */}
         <div className="flex-grow h-full w-full relative z-0">
-          <Tldraw onMount={handleMount} />
+          <Excalidraw
+            excalidrawAPI={handleMount}
+            theme="light"
+            initialData={{
+              appState: {
+                viewBackgroundColor: "#faf8f5",
+                currentItemStrokeColor: "#1c1a22",
+                currentItemBackgroundColor: "transparent",
+              }
+            }}
+            UIOptions={{
+              canvasActions: {
+                changeViewBackgroundColor: false,
+                clearCanvas: false,
+                loadScene: false,
+                saveToActiveFile: false,
+                toggleTheme: false,
+                saveAsImage: false,
+              },
+              welcomeScreen: false,
+            }}
+          />
         </div>
 
         {/* Right Panel: Collaborative Lobby / Sticky Notes (Overlayed) */}
