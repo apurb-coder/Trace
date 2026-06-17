@@ -14,7 +14,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newGridType, setNewGridType] = useState('grid');
+  const [newGridType, setNewGridType] = useState('blank');
   
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState('');
@@ -247,30 +247,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-1">Paper Background Layout</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { val: 'blank', label: 'Plain White' },
-                    { val: 'grid', label: 'Graph Grid' },
-                    { val: 'dots', label: 'Sketch Dots' },
-                    { val: 'ruled', label: 'Notebook Ruled' }
-                  ].map((g) => (
-                    <button
-                      key={g.val}
-                      type="button"
-                      onClick={() => setNewGridType(g.val)}
-                      className={`p-2 border-sketchy-thin text-sm transition-all ${
-                        newGridType === g.val
-                          ? 'bg-accent/20 border-accent font-bold'
-                          : 'bg-paper hover:bg-white'
-                      }`}
-                    >
-                      {g.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+
 
               <div className="flex items-center justify-end gap-3 pt-4">
                 <button
