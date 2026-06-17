@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AlertCircle, LogIn } from 'lucide-react';
 
 export default function Login({ onLogin, onNavigate }) {
   const [email, setEmail] = useState('collab@trace.draw');
@@ -49,7 +50,7 @@ export default function Login({ onLogin, onNavigate }) {
         {/* Error Alert Box */}
         {error && (
           <div className="mb-6 border-sketchy-thin border-accent text-accent bg-accent/5 p-4 text-sm font-hand rounded flex items-center gap-2">
-            <span className="text-lg">⚠</span>
+            <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
@@ -97,7 +98,7 @@ export default function Login({ onLogin, onNavigate }) {
             type="submit"
             className="w-full btn-sketchy btn-sketchy-accent text-lg flex items-center justify-center gap-2 py-3 shadow-sketchy"
           >
-            ✏️ ENTER WORKSPACE
+            <LogIn size={20} /> ENTER WORKSPACE
           </button>
         </form>
 

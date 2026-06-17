@@ -151,21 +151,26 @@ html, body, #root {
 }
 
 /* Scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent !important;
+}
+
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 1px;
+  height: 1px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-paper-dark);
-  border-left: 2px solid var(--color-ink);
+  background: transparent !important;
+  border: none !important;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-ink-muted);
-  border: 2px solid var(--color-ink);
-  border-radius: 4px;
+  background: #e2e8f0 !important;
+  border-radius: 9999px !important;
+  border: none !important;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-ink);
+  background: #cbd5e1 !important;
 }
 
 /* ==========================================

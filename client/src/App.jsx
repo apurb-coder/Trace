@@ -11,7 +11,7 @@ export default function App() {
     name: 'Apurb',
     email: 'collab@trace.draw',
     role: 'Engineer',
-    avatar: '✏️'
+    avatar: 'pencil'
   });
   const [currentPage, setCurrentPage] = useState('workspace'); // default to workspace for instant demo, user can go to login/signup
   const [activeRoom, setActiveRoom] = useState(null);
@@ -20,7 +20,7 @@ export default function App() {
     setUser({
       ...userData,
       role: 'Engineer',
-      avatar: '✏%'
+      avatar: 'pencil'
     });
     setCurrentPage('workspace');
   };
@@ -30,7 +30,7 @@ export default function App() {
       name: userData.name,
       email: userData.email,
       role: userData.role,
-      avatar: '🚀'
+      avatar: 'rocket'
     });
     setCurrentPage('workspace');
   };

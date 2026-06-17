@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { User, Shield, PenTool, Check, ArrowLeft, Activity } from 'lucide-react';
+import { User, Shield, PenTool, Check, ArrowLeft, Activity, BarChart2, Settings, Save } from 'lucide-react';
+import { getAvatarIcon } from '../utils/avatars';
 
-const AVATARS = ['✏️', '🎨', '📐', '🧠', '🔬', '💡', '🎒', '🚀'];
+const AVATARS = ['pencil', 'palette', 'ruler', 'brain', 'flask', 'lightbulb', 'backpack', 'rocket'];
 
 export default function Profile({ user, onUpdateUser, onNavigate }) {
   const [name, setName] = useState(user?.name || 'Apurb');
@@ -38,8 +39,8 @@ export default function Profile({ user, onUpdateUser, onNavigate }) {
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Profile Summary Card */}
         <div className="bg-white border-sketchy shadow-sketchy p-6 flex flex-col items-center text-center animate-paper">
-          <div className="w-24 h-24 rounded-full border-3 border-ink bg-paper flex items-center justify-center text-5xl mb-4 shadow-sm relative">
-            <span>{avatar}</span>
+          <div className="w-24 h-24 rounded-full border-3 border-ink bg-paper flex items-center justify-center text-ink mb-4 shadow-sm relative">
+            {getAvatarIcon(avatar, 40)}
             <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full border-2 border-ink bg-accent text-white flex items-center justify-center text-xs">
               ★
             </div>
@@ -51,7 +52,9 @@ export default function Profile({ user, onUpdateUser, onNavigate }) {
           <p className="text-sm text-ink-muted italic mb-6">"{bio}"</p>
 
           <div className="w-full border-t border-dashed border-ink/20 pt-6 space-y-4">
-            <h3 className="text-left font-sketch text-lg font-bold mb-2">📊 Sketchy Stats</h3>
+            <h3 className="text-left font-sketch text-lg font-bold mb-2 flex items-center gap-2">
+              <BarChart2 size={20} /> Sketchy Stats
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="border-sketchy-thin bg-paper p-3 text-center rounded">
                 <span className="block text-2xl font-bold text-accent">82</span>
@@ -74,7 +77,7 @@ export default function Profile({ user, onUpdateUser, onNavigate }) {
           <div className="absolute -top-3 right-1/4 w-20 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[2deg] opacity-80 pointer-events-none"></div>
 
           <h2 className="font-sketch text-3xl font-bold mb-6 text-ink flex items-center gap-2">
-            ⚙️ Edit Sketchbook settings
+            <Settings size={28} /> Edit Sketchbook settings
           </h2>
 
           {saved && (
@@ -96,13 +99,13 @@ export default function Profile({ user, onUpdateUser, onNavigate }) {
                     key={av}
                     type="button"
                     onClick={() => setAvatar(av)}
-                    className={`h-12 border-sketchy-thin text-2xl flex items-center justify-center transition-all ${
+                    className={`h-12 border-sketchy-thin flex items-center justify-center transition-all text-ink ${
                       avatar === av
                         ? 'bg-accent/20 border-accent scale-105 shadow-sm'
                         : 'bg-paper hover:bg-white hover:scale-102'
                     }`}
                   >
-                    {av}
+                    {getAvatarIcon(av, 24)}
                   </button>
                 ))}
               </div>
@@ -171,7 +174,7 @@ export default function Profile({ user, onUpdateUser, onNavigate }) {
                 type="submit"
                 className="btn-sketchy btn-sketchy-accent text-white flex items-center gap-2 py-3 px-6 shadow-sketchy"
               >
-                💾 SAVE SKETCHBOOK
+                <Save size={18} /> SAVE SKETCHBOOK
               </button>
             </div>
           </form>

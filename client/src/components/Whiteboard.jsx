@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
-import { ArrowLeft, Users, Link2, Send, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin } from 'lucide-react';
 
 export default function Whiteboard({ room, onBack, user }) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
@@ -59,7 +59,7 @@ export default function Whiteboard({ room, onBack, user }) {
 
           <div>
             <h1 className="font-sketch text-lg md:text-xl font-bold leading-none flex items-center gap-2">
-              📖 {room?.name || 'Sketchbook Session'}
+              <BookOpen size={20} /> {room?.name || 'Sketchbook Session'}
             </h1>
             <span className="text-xs text-accent font-mono uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
               <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
@@ -149,7 +149,7 @@ export default function Whiteboard({ room, onBack, user }) {
 
           <div className="p-4 border-b border-dashed border-ink/20 bg-paper">
             <h3 className="font-sketch text-lg font-bold flex items-center gap-2">
-              📌 Collaborative Notes
+              <Pin size={18} /> Collaborative Notes
             </h3>
             <p className="text-xs text-ink-muted mt-1">Scribble messages to other designers on this room canvas.</p>
           </div>

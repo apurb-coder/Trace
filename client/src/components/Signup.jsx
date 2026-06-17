@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AlertCircle, UserPlus } from 'lucide-react';
 
 export default function Signup({ onRegister, onNavigate }) {
   const [name, setName] = useState('');
@@ -47,7 +48,7 @@ export default function Signup({ onRegister, onNavigate }) {
 
         {error && (
           <div className="mb-6 border-sketchy-thin border-accent text-accent bg-accent/5 p-4 text-sm font-hand rounded flex items-center gap-2">
-            <span className="text-lg">⚠</span>
+            <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
@@ -117,7 +118,7 @@ export default function Signup({ onRegister, onNavigate }) {
               type="submit"
               className="w-full btn-sketchy btn-sketchy-cyan text-lg flex items-center justify-center gap-2 py-3 shadow-sketchy"
             >
-              🚀 CREATE FREE ACCOUNT
+              <UserPlus size={20} /> CREATE FREE ACCOUNT
             </button>
           </div>
         </form>

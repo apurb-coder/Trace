@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Plus, Calendar, Settings, LogOut, Trash2, Edit2, Play, Users } from 'lucide-react';
+import { Search, Plus, Calendar, Settings, LogOut, Trash2, Edit2, Play, Users, StickyNote, Wrench, Grid, PlusCircle, Rocket } from 'lucide-react';
+import { getAvatarIcon } from '../utils/avatars';
 
 const INITIAL_WORKSPACES = [
   { id: 'ws-1', name: 'Sprint 1 Brainstorm', updated: '2 hours ago', members: ['A', 'D', 'K'], gridType: 'grid' },
@@ -63,8 +64,8 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
       {/* Top Navbar */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 border-sketchy bg-white p-4 mb-8 relative">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full border-2 border-ink bg-accent text-white flex items-center justify-center text-2xl font-sketch">
-            {user?.avatar || '✏️'}
+          <div className="w-12 h-12 rounded-full border-2 border-ink bg-accent text-white flex items-center justify-center shadow-sm">
+            {getAvatarIcon(user?.avatar || 'pencil', 24)}
           </div>
           <div>
             <h2 className="font-sketch text-xl md:text-2xl font-bold">
@@ -97,14 +98,14 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
           <div className="absolute -top-3 left-10 w-16 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-3deg] pointer-events-none"></div>
 
           <h3 className="font-sketch text-lg font-bold mb-4 flex items-center gap-2">
-            🗒️ Quick Notes
+            <StickyNote size={20} /> Quick Notes
           </h3>
           <p className="text-sm text-ink-muted leading-relaxed mb-6">
             Click on any canvas card to load the whiteboard workspace. We keep the whiteboard canvas clean and lag-free, but styled the framing around it with custom tactile scribbles.
           </p>
 
           <div className="border-t border-dashed border-ink/20 pt-6">
-            <h4 className="font-sketch text-base font-bold mb-3">🛠️ Canvas Quick-Start</h4>
+            <h4 className="font-sketch text-base font-bold mb-3 flex items-center gap-2"><Wrench size={18} /> Canvas Quick-Start</h4>
             <button
               onClick={() => setShowCreateModal(true)}
               className="w-full btn-sketchy btn-sketchy-accent flex items-center justify-center gap-2 py-3"
@@ -174,7 +175,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
                         <Calendar size={12} /> {ws.updated}
                       </span>
                       <span className="flex items-center gap-1 capitalize">
-                        ⚙️ {ws.gridType} style
+                        <Grid size={12} /> {ws.gridType} style
                       </span>
                     </div>
                   </div>
@@ -228,7 +229,9 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
             {/* Corner Tape details */}
             <div className="absolute -top-3 left-1/3 w-24 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-2deg] pointer-events-none"></div>
 
-            <h3 className="font-sketch text-2xl font-bold mb-4">🆕 Initialize Blank Canvas</h3>
+            <h3 className="font-sketch text-2xl font-bold mb-4 flex items-center gap-2">
+              <PlusCircle size={24} /> Initialize Blank Canvas
+            </h3>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
@@ -278,9 +281,9 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
                 </button>
                 <button
                   type="submit"
-                  className="btn-sketchy btn-sketchy-accent text-white py-2 px-6 shadow-sketchy"
+                  className="btn-sketchy btn-sketchy-accent text-white py-2 px-6 shadow-sketchy flex items-center justify-center gap-2"
                 >
-                  🚀 START DRAWING
+                  <Rocket size={18} /> START DRAWING
                 </button>
               </div>
             </form>
