@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
-import { ArrowLeft, Users, Link2, Send } from 'lucide-react';
+import { ArrowLeft, Users, Link2, Send, MessageSquare } from 'lucide-react';
 
 export default function Whiteboard({ room, onBack, user }) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [showCollabNotes, setShowCollabNotes] = useState(true);
   const [stickies, setStickies] = useState([
     { id: 1, author: 'Ada', text: 'Added the layout architecture sketch!', color: 'bg-accent-cyan/10' },
     { id: 2, author: 'Kai', text: 'Make sure we keep the whiteboard canvas clean and fast.', color: 'bg-accent/10' }
@@ -87,9 +88,18 @@ export default function Whiteboard({ room, onBack, user }) {
           </div>
 
           <button
+            onClick={() => setShowCollabNotes(!showCollabNotes)}
+            className={`btn-sketchy flex items-center gap-1.5 text-sm py-1.5 px-3 transition-colors ${
+              showCollabNotes ? '!bg-accent !text-white border-ink' : 'bg-white text-ink'
+            }`}
+          >
+            <MessageSquare size={16} /> {showCollabNotes ? 'HIDE NOTES' : 'SHOW NOTES'}
+          </button>
+
+          <button
             onClick={copyInvite}
             className={`btn-sketchy flex items-center gap-1.5 text-sm py-1.5 px-3 transition-colors ${
-              copied ? 'bg-accent-green text-white border-accent-green' : 'bg-white text-ink'
+              copied ? '!bg-accent-green !text-white border-accent-green' : 'bg-white text-ink'
             }`}
           >
             <Link2 size={16} /> {copied ? 'COPIED!' : 'SHARE LINK'}
@@ -131,7 +141,9 @@ export default function Whiteboard({ room, onBack, user }) {
         </div>
 
         {/* Right Panel: Collaborative Lobby / Sticky Notes (Overlayed) */}
-        <aside className="w-80 h-full bg-white border-l-3 border-ink flex flex-col z-10 shadow-lg shrink-0 hidden md:flex animate-paper">
+        <aside className={`absolute md:relative right-0 top-0 bottom-0 w-80 h-full bg-white border-l-3 border-ink flex flex-col z-20 shadow-lg shrink-0 transition-all duration-300 animate-paper ${
+          showCollabNotes ? 'flex' : 'hidden'
+        }`}>
           {/* Spine Binding tape header */}
           <div className="absolute top-2 -left-3 w-6 h-12 bg-[#f1ebd9] border border-[#e6deca] rotate-[-90deg] opacity-75 shadow-sm pointer-events-none"></div>
 

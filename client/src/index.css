@@ -256,4 +256,79 @@ html, body, #root {
   --icon-fill-color: #ffffff !important;
 }
 
+/* Hamburger, Zoom % & Undo/Redo theme overrides */
+.excalidraw .main-menu-trigger,
+.excalidraw .reset-zoom-button,
+.excalidraw button[aria-label^="Undo"],
+.excalidraw button[aria-label^="Redo"],
+.excalidraw button[title^="Undo"],
+.excalidraw button[title^="Redo"] {
+  border: 2px solid #1c1a22 !important;
+  border-radius: 6px 12px 6px 10px / 10px 6px 12px 6px !important;
+  background-color: #faf8f5 !important;
+  color: #1c1a22 !important;
+  box-shadow: 2px 2px 0px 0px #1c1a22 !important;
+  transition: all 0.15s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  width: var(--button-size, 2.5rem) !important;
+  height: var(--button-size, 2.5rem) !important;
+}
+
+.excalidraw .reset-zoom-button {
+  width: auto !important;
+  padding: 0 12px !important;
+}
+
+.excalidraw button[aria-label^="Undo"],
+.excalidraw button[aria-label^="Redo"],
+.excalidraw button[title^="Undo"],
+.excalidraw button[title^="Redo"] {
+  border-radius: 12px 12px 6px 6px / 6px 6px 12px 12px !important;
+}
+
+.excalidraw .main-menu-trigger:hover,
+.excalidraw .reset-zoom-button:hover,
+.excalidraw button[aria-label^="Undo"]:not([disabled]):hover,
+.excalidraw button[aria-label^="Redo"]:not([disabled]):hover,
+.excalidraw button[title^="Undo"]:not([disabled]):hover,
+.excalidraw button[title^="Redo"]:not([disabled]):hover {
+  background-color: #e0533c !important;
+  color: #ffffff !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .main-menu-trigger:active,
+.excalidraw .reset-zoom-button:active,
+.excalidraw button[aria-label^="Undo"]:not([disabled]):active,
+.excalidraw button[aria-label^="Redo"]:not([disabled]):active,
+.excalidraw button[title^="Undo"]:not([disabled]):active,
+.excalidraw button[title^="Redo"]:not([disabled]):active {
+  transform: translate(0px, 0px) !important;
+  box-shadow: 0px 0px 0px 0px #1c1a22 !important;
+}
+
+.excalidraw .main-menu-trigger svg,
+.excalidraw button[aria-label^="Undo"] svg,
+.excalidraw button[aria-label^="Redo"] svg,
+.excalidraw button[title^="Undo"] svg,
+.excalidraw button[title^="Redo"] svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.excalidraw button[aria-label^="Undo"]:disabled,
+.excalidraw button[aria-label^="Redo"]:disabled,
+.excalidraw button[title^="Undo"]:disabled,
+.excalidraw button[title^="Redo"]:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+
 
