@@ -24,7 +24,10 @@ yarn-error.log*
 .agent
 .agents
 graphify-out/
-
+.impeccable
+.codex
+PRODUCT.md
+DESIGN.md
 # OS files
 .DS_Store
 Thumbs.db

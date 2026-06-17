@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #faf8f5; /* warm sketchbook paper background */
+  --color-paper-dark: #f4f0e6; /* darker paper for panels/dropdowns */
+  --color-ink: #1c1a22; /* hand-drawn dark ink charcoal */
+  --color-ink-muted: #575463; /* pencil gray for helper text */
+  --color-accent: #e0533c; /* sketchy orange marker highlight */
+  --color-accent-hover: #c4402a;
+  --color-accent-cyan: #2baec4; /* sketchy blue pen marker */
+  --color-accent-green: #37a85c; /* sketchy green marker */
+  
+  --font-sketch: 'Architects Daughter', cursive;
+  --font-hand: 'Playpen Sans', cursive;
+  --font-clean: 'Inter', system-ui, sans-serif;
+  
+  --radius-sketchy: 8px 16px 8px 12px / 12px 8px 16px 8px;
+}
+
+/* Global Styles */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-clean);
+}
+
+/* Custom sketch-like utilities */
+.font-sketch {
+  font-family: var(--font-sketch);
+}
+
+.font-hand {
+  font-family: var(--font-hand);
+}
+
+.font-clean {
+  font-family: var(--font-clean);
+}
+
+/* Organic hand-drawn borders */
+.border-sketchy {
+  border: 3px solid var(--color-ink);
+  border-radius: 6px 16px 8px 12px / 12px 8px 14px 10px;
+}
+
+.border-sketchy-thin {
+  border: 2px solid var(--color-ink);
+  border-radius: 4px 12px 6px 10px / 10px 4px 12px 6px;
+}
+
+/* Hard sketchy box shadows */
+.shadow-sketchy {
+  box-shadow: 4px 4px 0px 0px var(--color-ink);
+}
+
+.shadow-sketchy-lg {
+  box-shadow: 8px 8px 0px 0px var(--color-ink);
+}
+
+.shadow-sketchy-accent {
+  box-shadow: 4px 4px 0px 0px var(--color-accent);
+}
+
+/* Sketchy input glow & outline override */
+.input-sketchy {
+  border: 3px solid var(--color-ink);
+  border-radius: 6px 16px 8px 12px / 12px 8px 14px 10px;
+  background-color: #ffffff;
+  padding: 12px 16px;
+  font-family: var(--font-hand);
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-sketchy:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--color-accent);
+}
+
+/* Sketchy button behavior */
+.btn-sketchy {
+  border: 3px solid var(--color-ink);
+  border-radius: 6px 16px 8px 12px / 12px 8px 14px 10px;
+  padding: 12px 24px;
+  font-family: var(--font-sketch);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  background-color: #ffffff;
+  user-select: none;
+}
+
+.btn-sketchy:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--color-ink);
+}
+
+.btn-sketchy:active {
+  transform: translate(0px, 0px);
+  box-shadow: 0px 0px 0px 0px var(--color-ink);
+}
+
+.btn-sketchy-accent {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.btn-sketchy-accent:hover {
+  background-color: var(--color-accent-hover);
+  box-shadow: 4px 4px 0px 0px var(--color-ink);
+}
+
+/* Scratchy cross-out effect for disabled states */
+.btn-sketchy:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Wavy line or underline effects */
+.underline-sketchy {
+  position: relative;
+}
+
+.underline-sketchy::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 4px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'><path d='M0,5 Q20,8 40,3 T80,7 L100,4' stroke='%23e0533c' stroke-width='3' fill='none' stroke-linecap='round'/></svg>");
+  background-size: 100% 100%;
+}
+
+.underline-sketchy-ink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 4px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'><path d='M0,5 Q20,8 40,3 T80,7 L100,4' stroke='%231c1a22' stroke-width='3' fill='none' stroke-linecap='round'/></svg>");
+  background-size: 100% 100%;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper-dark);
+  border-left: 2px solid var(--color-ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-muted);
+  border: 2px solid var(--color-ink);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink);
+}

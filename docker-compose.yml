@@ -15,7 +15,7 @@ services:
 
   # Application Server Node 1
   app-node-1:
-    build: .
+    build: ./server
     container_name: trace-app-1
     environment:
       - PORT=3000
@@ -33,7 +33,7 @@ services:
 
   # Application Server Node 2
   app-node-2:
-    build: .
+    build: ./server
     container_name: trace-app-2
     environment:
       - PORT=3000
