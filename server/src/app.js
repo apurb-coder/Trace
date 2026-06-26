@@ -6,6 +6,7 @@ import { corsOptions, helmetOptions } from './config/security.js';
 import { apiRateLimiter } from './middleware/rateLimiter.js';
 import { getRoomSnapshot } from './services/redisService.js';
 import authRoutes from './routes/authRoutes.js';
+import roomRoutes from './routes/roomRoutes.js';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api', apiRateLimiter);
 
 // 6. Mount authentication endpoints
 app.use('/api/auth', authRoutes);
+app.use('/api/rooms', roomRoutes);
 
 /**
  * REST Endpoint: Health check (useful for Nginx, Docker, Kubernetes or cloud probes)

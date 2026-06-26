@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin } from 'lucide-react';
+import roomWS from '../services/websocket';
 
 export default function Whiteboard({ room, onBack, user, onNavigate }) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
@@ -12,12 +13,169 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
     { id: 2, author: 'Kai', text: 'Make sure we keep the whiteboard canvas clean and fast.', color: 'bg-accent/10' }
   ]);
   const [newStickyText, setNewStickyText] = useState('');
+  const [collaborators, setCollaborators] = useState(new Map());
+
+  const lastElementsRef = useRef(new Map());
+  const pendingChangesRef = useRef({ created: {}, updated: {}, deleted: {} });
+  const flushTimeoutRef = useRef(null);
 
   const handleMount = (api) => {
     setExcalidrawAPI(api);
   };
 
+  useEffect(() => {
+    roomWS.connect(room.id);
 
+    const unsubSnapshot = roomWS.subscribe('SNAPSHOT_INIT', ({ records }) => {
+      if (excalidrawAPI) {
+        const elements = Object.values(records || {});
+        lastElementsRef.current.clear();
+        elements.forEach((el) => {
+          lastElementsRef.current.set(el.id, { version: el.version, isDeleted: el.isDeleted });
+        });
+        excalidrawAPI.updateScene({
+          elements,
+          commitToHistory: false,
+        });
+      }
+    });
+
+    const unsubDiff = roomWS.subscribe('STORE_DIFF', ({ diff }) => {
+      if (excalidrawAPI) {
+        const currentElements = excalidrawAPI.getSceneElements();
+        const elementsMap = new Map(currentElements.map((el) => [el.id, el]));
+        const { created, updated, deleted } = diff;
+
+        if (created) {
+          Object.entries(created).forEach(([id, element]) => {
+            elementsMap.set(id, element);
+            lastElementsRef.current.set(id, { version: element.version, isDeleted: element.isDeleted });
+          });
+        }
+        if (updated) {
+          Object.entries(updated).forEach(([id, change]) => {
+            const existing = elementsMap.get(id);
+            if (existing) {
+              const updatedEl = Array.isArray(change)
+                ? { ...existing, ...change[1] }
+                : { ...existing, ...change };
+              elementsMap.set(id, updatedEl);
+              lastElementsRef.current.set(id, { version: updatedEl.version, isDeleted: updatedEl.isDeleted });
+            }
+          });
+        }
+        if (deleted) {
+          Object.entries(deleted).forEach(([id, element]) => {
+            const existing = elementsMap.get(id);
+            if (existing) {
+              const deletedEl = { ...existing, isDeleted: true };
+              elementsMap.set(id, deletedEl);
+              lastElementsRef.current.set(id, { version: deletedEl.version, isDeleted: true });
+            }
+          });
+        }
+
+        excalidrawAPI.updateScene({
+          elements: Array.from(elementsMap.values()),
+          commitToHistory: false,
+        });
+      }
+    });
+
+    const unsubPresence = roomWS.subscribe('PRESENCE', ({ userId, presence }) => {
+      setCollaborators((prev) => {
+        const next = new Map(prev);
+        next.set(userId, {
+          pointer: presence.pointer,
+          username: presence.username,
+          color: '#2baec4',
+        });
+        return next;
+      });
+    });
+
+    const unsubChat = roomWS.subscribe('CHAT_MESSAGE', (payload) => {
+      const colors = ['bg-accent/10', 'bg-accent-cyan/10', 'bg-accent-green/10'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      setStickies((prev) => [
+        ...prev,
+        {
+          id: payload.timestamp || Date.now(),
+          author: `Designer ${payload.userId.substring(0, 4)}`,
+          text: payload.text,
+          color: randomColor,
+        },
+      ]);
+    });
+
+    return () => {
+      unsubSnapshot();
+      unsubDiff();
+      unsubPresence();
+      unsubChat();
+      roomWS.disconnect();
+      clearTimeout(flushTimeoutRef.current);
+    };
+  }, [room.id, excalidrawAPI]);
+
+  const handleCanvasChange = (elements) => {
+    let hasChanges = false;
+
+    elements.forEach((el) => {
+      const last = lastElementsRef.current.get(el.id);
+      if (!last || last.version !== el.version || last.isDeleted !== el.isDeleted) {
+        if (el.isDeleted) {
+          pendingChangesRef.current.deleted[el.id] = el;
+          delete pendingChangesRef.current.created[el.id];
+          delete pendingChangesRef.current.updated[el.id];
+        } else if (!last) {
+          pendingChangesRef.current.created[el.id] = el;
+          delete pendingChangesRef.current.deleted[el.id];
+        } else {
+          pendingChangesRef.current.updated[el.id] = el;
+          delete pendingChangesRef.current.deleted[el.id];
+        }
+        hasChanges = true;
+        lastElementsRef.current.set(el.id, { version: el.version, isDeleted: el.isDeleted });
+      }
+    });
+
+    if (hasChanges) {
+      if (!flushTimeoutRef.current) {
+        flushTimeoutRef.current = setTimeout(() => {
+          const { created, updated, deleted } = pendingChangesRef.current;
+          const diff = {};
+          if (Object.keys(created).length > 0) diff.created = created;
+          if (Object.keys(updated).length > 0) diff.updated = updated;
+          if (Object.keys(deleted).length > 0) diff.deleted = deleted;
+
+          if (Object.keys(diff).length > 0) {
+            roomWS.send('STORE_DIFF', { diff });
+          }
+
+          pendingChangesRef.current = { created: {}, updated: {}, deleted: {} };
+          flushTimeoutRef.current = null;
+        }, 150);
+      }
+    }
+  };
+
+  const handlePointerMove = (e) => {
+    if (!excalidrawAPI) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const sceneCoords = excalidrawAPI.viewportCoordsToSceneCoords({
+      clientX: e.clientX,
+      clientY: e.clientY,
+    });
+    if (sceneCoords) {
+      roomWS.send('PRESENCE', {
+        presence: {
+          pointer: { x: sceneCoords.x, y: sceneCoords.y },
+          username: user?.name || 'Guest',
+        },
+      });
+    }
+  };
 
   const copyInvite = () => {
     navigator.clipboard.writeText(`https://trace.draw/room/${room?.id || 'ws-1'}`);
@@ -30,15 +188,14 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
     if (!newStickyText.trim()) return;
     const colors = ['bg-accent/10', 'bg-accent-cyan/10', 'bg-accent-green/10'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    setStickies([
-      ...stickies,
-      {
-        id: Date.now(),
-        author: user?.name || 'Apurb',
-        text: newStickyText.trim(),
-        color: randomColor
-      }
-    ]);
+    const sticky = {
+      id: Date.now(),
+      author: user?.name || 'Guest',
+      text: newStickyText.trim(),
+      color: randomColor,
+    };
+    setStickies([...stickies, sticky]);
+    roomWS.send('CHAT_MESSAGE', { text: sticky.text });
     setNewStickyText('');
   };
 
@@ -138,7 +295,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
 
 
         {/* Core Whiteboard Canvas (Sacred Canvas: Keep it clean and un-styled) */}
-        <div className="flex-grow h-full w-full relative z-0">
+        <div className="flex-grow h-full w-full relative z-0" onPointerMove={handlePointerMove}>
           <Excalidraw
             excalidrawAPI={handleMount}
             theme="light"
@@ -160,6 +317,8 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
               },
               welcomeScreen: false,
             }}
+            onChange={handleCanvasChange}
+            collaborators={collaborators}
           />
         </div>
 

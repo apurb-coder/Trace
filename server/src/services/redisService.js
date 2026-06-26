@@ -192,3 +192,15 @@ export async function publishRoomEvent(roomId, eventPayload) {
     console.error(`[Redis Service] Failed to publish event to room ${roomId}:`, error);
   }
 }
+
+/**
+ * Deletes the room snapshot from Redis.
+ * @param {string} roomId
+ */
+export async function deleteRoomSnapshot(roomId) {
+  try {
+    await redisClient.del(getSnapshotKey(roomId));
+  } catch (error) {
+    console.error(`[Redis Service] Failed to delete room snapshot for ${roomId}:`, error);
+  }
+}

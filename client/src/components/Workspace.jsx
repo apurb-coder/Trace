@@ -1,44 +1,59 @@
-import React, { useState } from 'react';
-import { Search, Plus, Calendar, Settings, LogOut, Trash2, Edit2, Play, Users, StickyNote, Wrench, Grid, PlusCircle, Rocket } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Plus, Calendar, Settings, LogOut, Trash2, Edit2, Play, Users, StickyNote, Wrench, PlusCircle, Rocket } from 'lucide-react';
 import { getAvatarIcon } from '../utils/avatars';
-
-const INITIAL_WORKSPACES = [
-  { id: 'ws-1', name: 'Sprint 1 Brainstorm', updated: '2 hours ago', members: ['A', 'D', 'K'], gridType: 'grid' },
-  { id: 'ws-2', name: 'Database Architecture Sketch', updated: 'Yesterday', members: ['A', 'M'], gridType: 'blank' },
-  { id: 'ws-3', name: 'UI Flow Design Draft', updated: '3 days ago', members: ['A', 'S', 'J', 'R'], gridType: 'ruled' },
-  { id: 'ws-4', name: 'Math 101 Lecture Canvas', updated: '1 week ago', members: ['E', 'A'], gridType: 'dots' }
-];
+import { fetchRooms, createRoom, updateRoom, deleteRoom } from '../services/roomApi';
 
 export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) {
-  const [workspaces, setWorkspaces] = useState(INITIAL_WORKSPACES);
+  const [workspaces, setWorkspaces] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newGridType, setNewGridType] = useState('blank');
   
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState('');
 
-  const handleCreate = (e) => {
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      try {
+        const data = await fetchRooms();
+        if (active) setWorkspaces(data);
+      } catch (err) {
+        console.error('[Load Rooms Error]', err);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleCreate = async (e) => {
     e.preventDefault();
     if (!newName.trim()) return;
-    const newRoom = {
-      id: `ws-${Date.now()}`,
-      name: newName.trim(),
-      updated: 'Just now',
-      members: [user?.name?.substring(0,1).toUpperCase() || 'U'],
-      gridType: newGridType
-    };
-    setWorkspaces([newRoom, ...workspaces]);
-    setNewName('');
-    setShowCreateModal(false);
-    onSelectRoom(newRoom);
+    try {
+      const room = await createRoom(newName.trim());
+      setWorkspaces([room, ...workspaces]);
+      setNewName('');
+      setShowCreateModal(false);
+      onSelectRoom(room);
+    } catch (err) {
+      console.error('[Create Room Error]', err);
+    }
   };
 
-  const handleDelete = (id, e) => {
+  const handleDelete = async (id, e) => {
     e.stopPropagation();
     if (confirm('Are you sure you want to tear this sketchbook page?')) {
-      setWorkspaces(workspaces.filter((w) => w.id !== id));
+      try {
+        await deleteRoom(id);
+        setWorkspaces(workspaces.filter((w) => w.id !== id));
+      } catch (err) {
+        console.error('[Delete Room Error]', err);
+      }
     }
   };
 
@@ -48,16 +63,29 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
     setEditName(name);
   };
 
-  const handleSaveRename = (e) => {
+  const handleSaveRename = async (e) => {
     e.preventDefault();
     if (!editName.trim()) return;
-    setWorkspaces(workspaces.map((w) => w.id === editId ? { ...w, name: editName.trim(), updated: 'Just now' } : w));
-    setEditId(null);
+    try {
+      const updated = await updateRoom(editId, editName.trim());
+      setWorkspaces(workspaces.map((w) => w.id === editId ? updated : w));
+      setEditId(null);
+    } catch (err) {
+      console.error('[Rename Room Error]', err);
+    }
   };
 
   const filtered = workspaces.filter((w) =>
     w.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-paper font-sketch text-2xl text-ink animate-pulse">
+        LOADING ROOMS...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-paper bg-notebook text-ink p-4 sm:p-8 font-hand">
@@ -173,10 +201,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
 
                     <div className="flex items-center gap-4 text-xs text-ink-muted mt-2 font-mono">
                       <span className="flex items-center gap-1">
-                        <Calendar size={12} /> {ws.updated}
-                      </span>
-                      <span className="flex items-center gap-1 capitalize">
-                        <Grid size={12} /> {ws.gridType} style
+                        <Calendar size={12} /> {ws.updatedAt ? new Date(ws.updatedAt).toLocaleDateString() : 'Just now'}
                       </span>
                     </div>
                   </div>
@@ -185,7 +210,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
                   <div className="flex items-center justify-between border-t border-dashed border-ink/10 pt-4 mt-4">
                     {/* Member Avatars */}
                     <div className="flex -space-x-2">
-                      {ws.members.map((m, idx) => (
+                      {(ws.members || [user?.name?.substring(0, 1).toUpperCase() || 'U']).map((m, idx) => (
                         <div
                           key={idx}
                           className="w-7 h-7 rounded-full border border-ink bg-[#f4f0e6] flex items-center justify-center text-xs font-bold text-ink shadow-sm"
