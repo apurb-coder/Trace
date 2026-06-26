@@ -1,4 +1,8 @@
 import { redisClient, redisPub, redisSub } from '../config/redis.js';
+import prisma from '../utils/prisma.js';
+
+// Map to hold throttled sync timeouts for database writes
+const syncDebounceTimers = new Map();
 
 // Central mapping to route incoming Redis Pub/Sub messages to room handlers
 const roomCallbacks = new Map(); // Map<roomId, Set<Function>>
@@ -42,7 +46,23 @@ const getRoomChannel = (roomId) => `room:${roomId}`;
 export async function getRoomSnapshot(roomId) {
   try {
     const raw = await redisClient.get(getSnapshotKey(roomId));
-    return raw ? JSON.parse(raw) : null;
+    if (raw) {
+      return JSON.parse(raw);
+    }
+
+    // Fallback: Read from database
+    const room = await prisma.room.findUnique({
+      where: { id: roomId },
+      select: { canvasData: true }
+    });
+
+    if (room && room.canvasData) {
+      // Warm Redis cache
+      await redisClient.set(getSnapshotKey(roomId), JSON.stringify(room.canvasData));
+      return room.canvasData;
+    }
+
+    return null;
   } catch (error) {
     console.error(`[Redis Service] Failed to get room snapshot for ${roomId}:`, error);
     return null;
@@ -122,6 +142,9 @@ export async function patchRoomSnapshot(roomId, diff) {
 
     // Save patched snapshot back to Redis
     await redisClient.set(key, JSON.stringify(snapshot));
+
+    // Queue background save to Postgres DB
+    queueRoomDbSync(roomId);
   } catch (error) {
     console.error(`[Redis Service] Failed to patch room snapshot for ${roomId}:`, error);
   }
@@ -194,13 +217,72 @@ export async function publishRoomEvent(roomId, eventPayload) {
 }
 
 /**
- * Deletes the room snapshot from Redis.
+ * Deletes the room snapshot from Redis. Also cancels any pending DB sync.
  * @param {string} roomId
  */
 export async function deleteRoomSnapshot(roomId) {
   try {
+    if (syncDebounceTimers.has(roomId)) {
+      clearTimeout(syncDebounceTimers.get(roomId));
+      syncDebounceTimers.delete(roomId);
+    }
     await redisClient.del(getSnapshotKey(roomId));
   } catch (error) {
     console.error(`[Redis Service] Failed to delete room snapshot for ${roomId}:`, error);
+  }
+}
+
+/**
+ * Queues a throttled database sync for the room snapshot.
+ * Writes to Postgres at most once every 30 seconds.
+ * @param {string} roomId
+ */
+export function queueRoomDbSync(roomId) {
+  if (syncDebounceTimers.has(roomId)) {
+    return;
+  }
+
+  const timer = setTimeout(async () => {
+    syncDebounceTimers.delete(roomId);
+    try {
+      const raw = await redisClient.get(getSnapshotKey(roomId));
+      if (raw) {
+        const snapshot = JSON.parse(raw);
+        await prisma.room.update({
+          where: { id: roomId },
+          data: { canvasData: snapshot }
+        });
+        console.log(`[DB Sync] Throttled sync for room ${roomId} completed.`);
+      }
+    } catch (error) {
+      console.error(`[DB Sync Error] Failed throttled sync for room ${roomId}:`, error);
+    }
+  }, 30000); // 30 seconds
+
+  syncDebounceTimers.set(roomId, timer);
+}
+
+/**
+ * Instantly flushes the current Redis snapshot to Postgres and clears any scheduled timers.
+ * @param {string} roomId
+ */
+export async function flushRoomSnapshotToDb(roomId) {
+  if (syncDebounceTimers.has(roomId)) {
+    clearTimeout(syncDebounceTimers.get(roomId));
+    syncDebounceTimers.delete(roomId);
+  }
+
+  try {
+    const raw = await redisClient.get(getSnapshotKey(roomId));
+    if (raw) {
+      const snapshot = JSON.parse(raw);
+      await prisma.room.update({
+        where: { id: roomId },
+        data: { canvasData: snapshot }
+      });
+      console.log(`[DB Sync] Immediate flush for room ${roomId} completed.`);
+    }
+  } catch (error) {
+    console.error(`[DB Sync Error] Failed immediate flush for room ${roomId}:`, error);
   }
 }
