@@ -1,6 +1,22 @@
 version: '3.8'
 
 services:
+  # Relational Database Cache
+  db:
+    image: postgres:15-alpine
+    container_name: trace-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trace_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trace_password}
+      POSTGRES_DB: ${POSTGRES_DB:-trace_db}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - trace-network
+    restart: always
+
   # Persistence and Event Broker layer
   redis:
     image: redis:7-alpine
@@ -18,15 +34,20 @@ services:
     build: ./server
     container_name: trace-app-1
     environment:
-      - PORT=3000
+      - PORT=${PORT:-3000}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - NODE_ENV=production
       - CORS_ORIGIN=*
       - RATE_LIMIT_WINDOW_MS=900000 # 15 mins
       - RATE_LIMIT_MAX=100
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-trace_user}:${POSTGRES_PASSWORD:-trace_password}@db:5432/${POSTGRES_DB:-trace_db}
+      - SUPABASE_JWKS_URL=${SUPABASE_JWKS_URL:-https://your-supabase-project.supabase.co/auth/v1/.well-known/jwks.json}
+      - SUPABASE_JWT_ISSUER=${SUPABASE_JWT_ISSUER:-https://your-supabase-project.supabase.co/auth/v1}
+      - SUPABASE_JWT_AUDIENCE=${SUPABASE_JWT_AUDIENCE:-authenticated}
     depends_on:
       - redis
+      - db
     networks:
       - trace-network
     restart: always
@@ -36,15 +57,20 @@ services:
     build: ./server
     container_name: trace-app-2
     environment:
-      - PORT=3000
+      - PORT=${PORT:-3000}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - NODE_ENV=production
       - CORS_ORIGIN=*
       - RATE_LIMIT_WINDOW_MS=900000 # 15 mins
       - RATE_LIMIT_MAX=100
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-trace_user}:${POSTGRES_PASSWORD:-trace_password}@db:5432/${POSTGRES_DB:-trace_db}
+      - SUPABASE_JWKS_URL=${SUPABASE_JWKS_URL:-https://your-supabase-project.supabase.co/auth/v1/.well-known/jwks.json}
+      - SUPABASE_JWT_ISSUER=${SUPABASE_JWT_ISSUER:-https://your-supabase-project.supabase.co/auth/v1}
+      - SUPABASE_JWT_AUDIENCE=${SUPABASE_JWT_AUDIENCE:-authenticated}
     depends_on:
       - redis
+      - db
     networks:
       - trace-network
     restart: always
@@ -66,6 +92,7 @@ services:
 
 volumes:
   redis_data:
+  pg_data:
 
 networks:
   trace-network:

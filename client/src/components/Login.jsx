@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
 import { AlertCircle, LogIn } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
 
 export default function Login({ onLogin, onNavigate }) {
   const [email, setEmail] = useState('collab@trace.draw');
   const [password, setPassword] = useState('sketch123');
   const [error, setError] = useState('');
+  const login = useAuthStore((state) => state.login);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       setError('Please fill in all sketchy fields!');
       return;
     }
     setError('');
-    onLogin({ email, name: email.split('@')[0] });
+    const { error: loginError } = await login(email, password);
+    if (loginError) {
+      setError(loginError.message || 'Invalid secret sketch or ink!');
+    } else {
+      onLogin();
+    }
   };
 
   return (

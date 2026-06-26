@@ -20,7 +20,7 @@ export function initWebSocketServer(server) {
   const heartbeatInterval = startHeartbeatMonitor(wss);
 
   // Intercept the HTTP Upgrade handshake process
-  server.on('upgrade', (request, socket, head) => {
+  server.on('upgrade', async (request, socket, head) => {
     try {
       const { pathname } = new URL(request.url, `http://${request.headers.host}`);
       
@@ -37,7 +37,7 @@ export function initWebSocketServer(server) {
       const roomId = roomMatch[1];
 
       // 1. Authenticate user credentials from handshake query token or authorization header
-      const user = authenticateWebSocket(request);
+      const user = await authenticateWebSocket(request);
       if (!user) {
         socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
         socket.destroy();

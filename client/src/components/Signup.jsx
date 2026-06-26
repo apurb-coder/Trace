@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AlertCircle, UserPlus } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
 
 export default function Signup({ onRegister, onNavigate }) {
   const [name, setName] = useState('');
@@ -7,15 +8,27 @@ export default function Signup({ onRegister, onNavigate }) {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Designer');
   const [error, setError] = useState('');
+  const signUp = useAuthStore((state) => state.signUp);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !password) {
       setError('Scribble down all the details to register!');
       return;
     }
     setError('');
-    onRegister({ email, name, role });
+    
+    const { error: signUpError } = await signUp(email, password, {
+      name,
+      role,
+      avatar: 'rocket'
+    });
+
+    if (signUpError) {
+      setError(signUpError.message || 'Registration failed!');
+    } else {
+      onRegister();
+    }
   };
 
   return (

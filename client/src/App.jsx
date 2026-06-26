@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
@@ -7,39 +7,34 @@ import ForgotPassword from './components/ForgotPassword';
 import Workspace from './components/Workspace';
 import Profile from './components/Profile';
 import Whiteboard from './components/Whiteboard';
+import { useAuthStore } from './store/useAuthStore';
+import { supabase } from './services/supabase';
 import './App.css';
 
 export default function App() {
-  const [user, setUser] = useState({
-    name: 'Apurb',
-    email: 'collab@trace.draw',
-    role: 'Engineer',
-    avatar: 'pencil'
-  });
+  const { user, initAuth, logout, loading } = useAuthStore();
   const [activeRoom, setActiveRoom] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const unsubscribe = initAuth();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [initAuth]);
+
   const handleLogin = (userData) => {
-    setUser({
-      ...userData,
-      role: 'Engineer',
-      avatar: 'pencil'
-    });
+    // Session is handled automatically by Zustand store listener, redirecting to /workspace.
     navigate('/workspace');
   };
 
   const handleRegister = (userData) => {
-    setUser({
-      name: userData.name,
-      email: userData.email,
-      role: userData.role,
-      avatar: 'rocket'
-    });
+    // Sync session on register
     navigate('/workspace');
   };
 
-  const handleLogout = () => {
-    setUser(null);
+  const handleLogout = async () => {
+    await logout();
     setActiveRoom(null);
     navigate('/');
   };
@@ -61,8 +56,27 @@ export default function App() {
     navigate('/whiteboard');
   };
 
-  const handleUpdateUser = (updatedUser) => {
-    setUser(updatedUser);
+  const handleUpdateUser = async (updatedUser) => {
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        name: updatedUser.name,
+        role: updatedUser.role,
+        avatar: updatedUser.avatar
+      }
+    });
+
+    if (!error) {
+      useAuthStore.setState((state) => ({
+        user: {
+          ...state.user,
+          name: updatedUser.name,
+          role: updatedUser.role,
+          avatar: updatedUser.avatar
+        }
+      }));
+    } else {
+      console.error('[Update User Error]', error.message);
+    }
   };
 
   // Helper for compatibility with legacy onNavigate prop
@@ -93,6 +107,14 @@ export default function App() {
         navigate('/');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-paper font-sketch text-2xl text-ink animate-pulse">
+        LOBBY SYNCHRONIZING...
+      </div>
+    );
+  }
 
   return (
     <Routes>
@@ -170,4 +192,3 @@ export default function App() {
     </Routes>
   );
 }
-

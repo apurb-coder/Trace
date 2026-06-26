@@ -5,6 +5,7 @@ import hpp from 'hpp';
 import { corsOptions, helmetOptions } from './config/security.js';
 import { apiRateLimiter } from './middleware/rateLimiter.js';
 import { getRoomSnapshot } from './services/redisService.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 
@@ -23,6 +24,9 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // 5. Apply global API rate limits
 app.use('/api', apiRateLimiter);
+
+// 6. Mount authentication endpoints
+app.use('/api/auth', authRoutes);
 
 /**
  * REST Endpoint: Health check (useful for Nginx, Docker, Kubernetes or cloud probes)

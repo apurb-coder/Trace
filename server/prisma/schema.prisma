@@ -1,0 +1,16 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id // Maps to Supabase Auth UUID (payload.sub)
+  email     String   @unique
+  role      String   @default("USER") // Caches custom role/metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
