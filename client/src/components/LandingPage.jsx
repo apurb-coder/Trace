@@ -77,19 +77,7 @@ export default function LandingPage({ user, onNavigate, onStartGuestDrawing }) {
           </button>
         </div>
 
-        {/* Account Quick Links */}
 
-        {user && (
-          <div className="flex items-center gap-3 mb-16 p-3 border-sketchy bg-white/80 shadow-sketchy relative text-sm">
-            <span className="font-hand text-ink-muted">Logged in as <strong className="text-ink">{user.name}</strong></span>
-            <button
-              onClick={() => onNavigate('workspace')}
-              className="btn-sketchy btn-sketchy-cyan py-1 px-3 text-xs"
-            >
-              GO TO WORKSPACE
-            </button>
-          </div>
-        )}
 
         {/* Features Layout: Rotated cards mimicking pages pinned to a board */}
         <div id="features-section" className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-8 max-w-5xl scroll-mt-6">
