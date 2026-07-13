@@ -62,25 +62,7 @@ class RoomManager {
     return this.rooms.has(roomId) && this.rooms.get(roomId).size > 0;
   }
 
-  /**
-   * Returns a list of all active room identifiers hosted on this node.
-   * @returns {string[]}
-   */
-  getActiveRooms() {
-    return Array.from(this.rooms.keys());
-  }
 
-  /**
-   * Computes the total count of active connections across all rooms on this node.
-   * @returns {number}
-   */
-  getTotalConnectionCount() {
-    let count = 0;
-    for (const clients of this.rooms.values()) {
-      count += clients.size;
-    }
-    return count;
-  }
 }
 
 // Export a singleton instance of the RoomManager

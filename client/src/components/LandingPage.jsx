@@ -1,5 +1,4 @@
-import React from 'react';
-import { PenTool, Users, LayoutGrid, LogIn, UserCircle2, ArrowRight } from 'lucide-react';
+import { PenTool, Users, LayoutGrid, LogIn, ArrowRight } from 'lucide-react';
 
 export default function LandingPage({ user, onNavigate, onStartGuestDrawing }) {
   return (

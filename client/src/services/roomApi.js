@@ -5,11 +5,6 @@ export const fetchRooms = async () => {
   return res.data;
 };
 
-export const fetchRoom = async (roomId) => {
-  const res = await apiClient.get(`/rooms/${roomId}`);
-  return res.data;
-};
-
 export const createRoom = async (name) => {
   const res = await apiClient.post('/rooms', { name });
   return res.data;

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Plus, Calendar, Settings, LogOut, Trash2, Edit2, Play, Users, StickyNote, Wrench, PlusCircle, Rocket } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Plus, Calendar, Settings, LogOut, Trash2, Edit2, Play, StickyNote, Wrench, PlusCircle, Rocket } from 'lucide-react';
 import { getAvatarIcon } from '../utils/avatars';
 import { fetchRooms, createRoom, updateRoom, deleteRoom } from '../services/roomApi';
 

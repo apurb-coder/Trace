@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pencil, Palette, Ruler, Brain, FlaskConical, Lightbulb, Backpack, Rocket } from 'lucide-react';
 
 export const getAvatarIcon = (name, size = 24) => {

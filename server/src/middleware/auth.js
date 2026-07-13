@@ -3,8 +3,6 @@ import url from 'url';
 import prisma from '../utils/prisma.js';
 
 const jwksUrl = process.env.SUPABASE_JWKS_URL;
-const jwtIssuer = process.env.SUPABASE_JWT_ISSUER;
-const jwtAudience = process.env.SUPABASE_JWT_AUDIENCE || 'authenticated';
 
 let JWKS;
 try {

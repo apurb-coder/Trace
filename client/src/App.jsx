@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
@@ -23,12 +23,12 @@ export default function App() {
     };
   }, [initAuth]);
 
-  const handleLogin = (userData) => {
+  const handleLogin = () => {
     // Session is handled automatically by Zustand store listener, redirecting to /workspace.
     navigate('/workspace');
   };
 
-  const handleRegister = (userData) => {
+  const handleRegister = () => {
     // Sync session on register
     navigate('/workspace');
   };

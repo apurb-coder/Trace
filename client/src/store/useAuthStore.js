@@ -102,7 +102,7 @@ export const useAuthStore = create((set, get) => ({
     set({ loading: true });
     try {
       await supabase.auth.signOut();
-    } catch (err) {
+    } catch {
       // ignore
     } finally {
       set({ user: null, token: null, isAuthenticated: false, loading: false });

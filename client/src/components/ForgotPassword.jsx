@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AlertCircle, Mail, ArrowLeft, CheckCircle, Send } from 'lucide-react';
 
 export default function ForgotPassword({ onNavigate }) {

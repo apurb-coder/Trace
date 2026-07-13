@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { User, Shield, PenTool, Check, ArrowLeft, Activity, BarChart2, Settings, Save } from 'lucide-react';
+import { useState } from 'react';
+import { Check, ArrowLeft, Activity, BarChart2, Settings, Save } from 'lucide-react';
 import { getAvatarIcon } from '../utils/avatars';
 
 const AVATARS = ['pencil', 'palette', 'ruler', 'brain', 'flask', 'lightbulb', 'backpack', 'rocket'];

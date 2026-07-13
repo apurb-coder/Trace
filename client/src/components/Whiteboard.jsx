@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin } from 'lucide-react';
@@ -65,7 +65,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
           });
         }
         if (deleted) {
-          Object.entries(deleted).forEach(([id, element]) => {
+          Object.keys(deleted).forEach((id) => {
             const existing = elementsMap.get(id);
             if (existing) {
               const deletedEl = { ...existing, isDeleted: true };
@@ -162,7 +162,6 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
 
   const handlePointerMove = (e) => {
     if (!excalidrawAPI) return;
-    const rect = e.currentTarget.getBoundingClientRect();
     const sceneCoords = excalidrawAPI.viewportCoordsToSceneCoords({
       clientX: e.clientX,
       clientY: e.clientY,

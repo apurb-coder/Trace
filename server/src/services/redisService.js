@@ -69,18 +69,7 @@ export async function getRoomSnapshot(roomId) {
   }
 }
 
-/**
- * Saves a consolidated whiteboard snapshot to Redis.
- * @param {string} roomId 
- * @param {object} snapshot 
- */
-export async function saveRoomSnapshot(roomId, snapshot) {
-  try {
-    await redisClient.set(getSnapshotKey(roomId), JSON.stringify(snapshot));
-  } catch (error) {
-    console.error(`[Redis Service] Failed to save room snapshot for ${roomId}:`, error);
-  }
-}
+
 
 /**
  * Merges a excalidraw-structured changeset (diff) into the existing snapshot stored in Redis.
