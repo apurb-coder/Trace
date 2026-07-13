@@ -177,7 +177,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
   };
 
   const copyInvite = () => {
-    navigator.clipboard.writeText(`https://trace.draw/room/${room?.id || 'ws-1'}`);
+    navigator.clipboard.writeText(`${window.location.origin}/room/${room?.id || 'ws-1'}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

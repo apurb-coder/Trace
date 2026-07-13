@@ -19,3 +19,9 @@ export const deleteRoom = async (roomId) => {
   const res = await apiClient.delete(`/rooms/${roomId}`);
   return res.data;
 };
+
+export const fetchRoomById = async (roomId) => {
+  const res = await apiClient.get(`/rooms/${roomId}`);
+  return res.data;
+};
+

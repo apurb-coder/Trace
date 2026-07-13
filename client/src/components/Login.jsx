@@ -3,8 +3,8 @@ import { AlertCircle, LogIn } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 export default function Login({ onLogin, onNavigate }) {
-  const [email, setEmail] = useState('collab@trace.draw');
-  const [password, setPassword] = useState('sketch123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const login = useAuthStore((state) => state.login);
 

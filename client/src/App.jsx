@@ -7,6 +7,7 @@ import ForgotPassword from './components/ForgotPassword';
 import Workspace from './components/Workspace';
 import Profile from './components/Profile';
 import Whiteboard from './components/Whiteboard';
+import RoomLoader from './components/RoomLoader';
 import { useAuthStore } from './store/useAuthStore';
 import { supabase } from './services/supabase';
 import './App.css';
@@ -184,6 +185,16 @@ export default function App() {
             }
             user={user}
             onBack={() => navigate(user ? '/workspace' : '/')}
+            onNavigate={handleNavigate}
+          />
+        }
+      />
+      <Route
+        path="/room/:roomId"
+        element={
+          <RoomLoader
+            user={user}
+            onSelectRoom={handleSelectRoom}
             onNavigate={handleNavigate}
           />
         }

@@ -1,3 +1,7 @@
+import { webcrypto } from 'node:crypto';
+if (!globalThis.crypto) {
+  globalThis.crypto = webcrypto;
+}
 import * as jose from 'jose';
 import url from 'url';
 import prisma from '../utils/prisma.js';
@@ -51,24 +55,18 @@ export const verifyToken = async (token) => {
     const email = payload.email || '';
     const role = payload.user_metadata?.role || 'USER';
 
-    let user = await prisma.user.findUnique({ where: { id } });
-
-    // Cache user reference record if not present
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          id,
-          email,
-          role
-        }
-      });
-    } else if (payload.user_metadata?.role && user.role !== role) {
-      // Sync metadata update
-      user = await prisma.user.update({
-        where: { id },
-        data: { role }
-      });
-    }
+    const user = await prisma.user.upsert({
+      where: { id },
+      update: {
+        email,
+        ...(payload.user_metadata?.role ? { role } : {})
+      },
+      create: {
+        id,
+        email,
+        role
+      }
+    });
 
     return {
       userId: user.id,
