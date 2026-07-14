@@ -2,9 +2,25 @@ import { useState, useEffect, useRef } from 'react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin } from 'lucide-react';
+import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 import roomWS from '../services/websocket';
 
+const getGuestName = () => {
+  let name = sessionStorage.getItem('trace_guest_name');
+  if (!name) {
+    name = uniqueNamesGenerator({
+      dictionaries: [adjectives, animals],
+      separator: ' ',
+      length: 2,
+      style: 'capital'
+    });
+    sessionStorage.setItem('trace_guest_name', name);
+  }
+  return name;
+};
+
 export default function Whiteboard({ room, onBack, user, onNavigate }) {
+  const displayName = user?.name || getGuestName();
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
   const [copied, setCopied] = useState(false);
   const [showCollabNotes, setShowCollabNotes] = useState(true);
@@ -168,7 +184,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
       roomWS.send('PRESENCE', {
         presence: {
           pointer: { x: sceneCoords.x, y: sceneCoords.y },
-          username: user?.name || 'Guest',
+          username: displayName,
         },
       });
     }
@@ -187,7 +203,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
     const sticky = {
       id: Date.now(),
-      author: user?.name || 'Guest',
+      author: displayName,
       text: newStickyText.trim(),
       color: randomColor,
     };
@@ -256,8 +272,8 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
               <Users size={14} /> COLLABORATORS:
             </span>
             <div className="flex -space-x-1">
-              <div className="w-8 h-8 rounded-full border border-ink bg-accent text-white flex items-center justify-center text-xs font-bold" title={`${user?.name} (You)`}>
-                {user?.name?.substring(0,1).toUpperCase() || 'A'}
+              <div className="w-8 h-8 rounded-full border border-ink bg-accent text-white flex items-center justify-center text-xs font-bold" title={`${displayName} (You)`}>
+                {displayName.substring(0, 1).toUpperCase()}
               </div>
               <div className="w-8 h-8 rounded-full border border-ink bg-accent-cyan text-white flex items-center justify-center text-xs font-bold" title="Ada">
                 D
