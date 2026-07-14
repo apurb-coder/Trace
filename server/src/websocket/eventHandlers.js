@@ -1,6 +1,7 @@
 import xss from 'xss';
 import { getRoomSnapshot, patchRoomSnapshot, publishRoomEvent } from '../services/redisService.js';
 import { roomManager } from '../services/roomManager.js';
+import prisma from '../utils/prisma.js';
 
 // Generate a unique identifier for this application server node instance
 const NODE_ID = `node_${Math.random().toString(36).substring(2, 9)}`;
@@ -44,12 +45,25 @@ export async function handleIncomingMessage(socket, rawData) {
     switch (type) {
       // client requests current full room snapshot (e.g. excalidraw catch-up synchronization)
       case 'INITIALIZE_ROOM': {
-        const snapshot = await getRoomSnapshot(roomId);
+        const [snapshot, messages] = await Promise.all([
+          getRoomSnapshot(roomId),
+          prisma.message.findMany({
+            where: { roomId },
+            orderBy: { timestamp: 'asc' }
+          })
+        ]);
         socket.send(JSON.stringify({
           type: 'SNAPSHOT_INIT',
           payload: {
             roomId,
             records: snapshot ? snapshot.records : {},
+            chatHistory: messages.map((m) => ({
+              id: m.id,
+              author: m.author,
+              text: m.text,
+              color: m.color,
+              timestamp: m.timestamp.getTime()
+            }))
           }
         }));
         break;
@@ -99,15 +113,31 @@ export async function handleIncomingMessage(socket, rawData) {
 
         // XSS Guardrail: Sanitize text inputs before broadcasting or storing
         const sanitizedText = xss(payload.text);
+        const author = payload.author ? xss(payload.author) : `Designer ${userId.substring(0, 4)}`;
+        const color = payload.color ? xss(payload.color) : 'bg-accent/10';
+
+        // Save to PostgreSQL DB
+        const savedMessage = await prisma.message.create({
+          data: {
+            roomId,
+            userId,
+            author,
+            text: sanitizedText,
+            color,
+          }
+        });
 
         await publishRoomEvent(roomId, {
           senderNodeId: NODE_ID,
           senderSocketId: socketId,
           type: 'CHAT_MESSAGE',
           payload: {
+            id: savedMessage.id,
             userId,
+            author,
             text: sanitizedText,
-            timestamp: Date.now()
+            color,
+            timestamp: savedMessage.timestamp.getTime()
           }
         });
         break;

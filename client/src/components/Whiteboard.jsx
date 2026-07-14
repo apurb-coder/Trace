@@ -8,10 +8,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
   const [copied, setCopied] = useState(false);
   const [showCollabNotes, setShowCollabNotes] = useState(true);
-  const [stickies, setStickies] = useState([
-    { id: 1, author: 'Ada', text: 'Added the layout architecture sketch!', color: 'bg-accent-cyan/10' },
-    { id: 2, author: 'Kai', text: 'Make sure we keep the whiteboard canvas clean and fast.', color: 'bg-accent/10' }
-  ]);
+  const [stickies, setStickies] = useState([]);
   const [newStickyText, setNewStickyText] = useState('');
   const [collaborators, setCollaborators] = useState(new Map());
 
@@ -26,7 +23,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
   useEffect(() => {
     roomWS.connect(room.id);
 
-    const unsubSnapshot = roomWS.subscribe('SNAPSHOT_INIT', ({ records }) => {
+    const unsubSnapshot = roomWS.subscribe('SNAPSHOT_INIT', ({ records, chatHistory }) => {
       if (excalidrawAPI) {
         const elements = Object.values(records || {});
         lastElementsRef.current.clear();
@@ -37,6 +34,9 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
           elements,
           commitToHistory: false,
         });
+      }
+      if (chatHistory) {
+        setStickies(chatHistory);
       }
     });
 
@@ -95,15 +95,13 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
     });
 
     const unsubChat = roomWS.subscribe('CHAT_MESSAGE', (payload) => {
-      const colors = ['bg-accent/10', 'bg-accent-cyan/10', 'bg-accent-green/10'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
       setStickies((prev) => [
         ...prev,
         {
-          id: payload.timestamp || Date.now(),
-          author: `Designer ${payload.userId.substring(0, 4)}`,
+          id: payload.id || payload.timestamp || Date.now(),
+          author: payload.author || `Designer ${payload.userId.substring(0, 4)}`,
           text: payload.text,
-          color: randomColor,
+          color: payload.color || 'bg-accent/10',
         },
       ]);
     });
@@ -194,7 +192,11 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
       color: randomColor,
     };
     setStickies([...stickies, sticky]);
-    roomWS.send('CHAT_MESSAGE', { text: sticky.text });
+    roomWS.send('CHAT_MESSAGE', {
+      text: sticky.text,
+      author: sticky.author,
+      color: sticky.color,
+    });
     setNewStickyText('');
   };
 

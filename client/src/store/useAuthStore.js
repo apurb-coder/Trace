@@ -36,8 +36,13 @@ export const useAuthStore = create((set, get) => ({
 
     try {
       const res = await apiClient.get('/auth/me');
+      const metadata = session.user?.user_metadata || {};
       set({
-        user: res.data.user,
+        user: {
+          ...res.data.user,
+          name: metadata.name || session.user.email?.split('@')[0] || 'User',
+          avatar: metadata.avatar || 'pencil'
+        },
         isAuthenticated: true,
         loading: false
       });
