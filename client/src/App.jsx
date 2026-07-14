@@ -42,7 +42,7 @@ export default function App() {
 
   const handleSelectRoom = (room) => {
     setActiveRoom(room);
-    navigate('/whiteboard');
+    navigate(`/whiteboard/${room.id}`);
   };
 
   const handleStartGuestDrawing = () => {
@@ -54,7 +54,7 @@ export default function App() {
       gridType: 'grid'
     };
     setActiveRoom(guestRoom);
-    navigate('/whiteboard');
+    navigate(`/whiteboard/${guestRoom.id}`);
   };
 
   const handleUpdateUser = async (updatedUser) => {
@@ -172,17 +172,13 @@ export default function App() {
       />
       <Route
         path="/whiteboard"
+        element={<Navigate to={`/whiteboard/guest-${Date.now()}`} replace />}
+      />
+      <Route
+        path="/whiteboard/:roomId"
         element={
           <Whiteboard
-            room={
-              activeRoom || {
-                id: 'guest-direct',
-                name: 'Guest Sketchbook',
-                updated: 'Just now',
-                members: ['G'],
-                gridType: 'grid'
-              }
-            }
+            room={activeRoom}
             user={user}
             onBack={() => navigate(user ? '/workspace' : '/')}
             onNavigate={handleNavigate}

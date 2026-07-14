@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
-import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin } from 'lucide-react';
+import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin, Loader2, AlertCircle } from 'lucide-react';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 import roomWS from '../services/websocket';
+import { fetchRoomById } from '../services/roomApi';
 
 const getGuestName = () => {
   let name = sessionStorage.getItem('trace_guest_name');
@@ -21,6 +23,11 @@ const getGuestName = () => {
 
 export default function Whiteboard({ room, onBack, user, onNavigate }) {
   const displayName = user?.name || getGuestName();
+  const { roomId } = useParams();
+  const [currentRoom, setCurrentRoom] = useState(room && room.id === roomId ? room : null);
+  const [loading, setLoading] = useState(!currentRoom);
+  const [error, setError] = useState(null);
+
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
   const [copied, setCopied] = useState(false);
   const [showCollabNotes, setShowCollabNotes] = useState(true);
@@ -37,9 +44,64 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
   };
 
   useEffect(() => {
-    roomWS.connect(room.id);
+    if (room && room.id === roomId) {
+      setCurrentRoom(room);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    let active = true;
+    const loadRoom = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        if (roomId.startsWith('guest-')) {
+          if (active) {
+            setCurrentRoom({
+              id: roomId,
+              name: 'Guest Sketchbook',
+              updated: 'Just now',
+              members: ['G'],
+              gridType: 'grid'
+            });
+            setLoading(false);
+          }
+        } else {
+          const fetched = await fetchRoomById(roomId);
+          if (active) {
+            setCurrentRoom(fetched);
+            setLoading(false);
+          }
+        }
+      } catch (err) {
+        console.error('[Whiteboard Load Error]', err);
+        if (active) {
+          setError(err.response?.data?.error || 'Could not trace the sketchbook page!');
+          setLoading(false);
+        }
+      }
+    };
+
+    loadRoom();
+    return () => {
+      active = false;
+    };
+  }, [roomId, room]);
+
+  useEffect(() => {
+    if (!currentRoom) return;
+
+    roomWS.connect(currentRoom.id);
 
     const unsubSnapshot = roomWS.subscribe('SNAPSHOT_INIT', ({ records, chatHistory }) => {
+      roomWS.send('PRESENCE', {
+        presence: {
+          pointer: null,
+          username: displayName,
+        },
+      });
+
       if (excalidrawAPI) {
         const elements = Object.values(records || {});
         lastElementsRef.current.clear();
@@ -110,6 +172,14 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
       });
     });
 
+    const unsubLeave = roomWS.subscribe('USER_LEAVE', ({ userId }) => {
+      setCollaborators((prev) => {
+        const next = new Map(prev);
+        next.delete(userId);
+        return next;
+      });
+    });
+
     const unsubChat = roomWS.subscribe('CHAT_MESSAGE', (payload) => {
       setStickies((prev) => [
         ...prev,
@@ -126,11 +196,12 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
       unsubSnapshot();
       unsubDiff();
       unsubPresence();
+      unsubLeave();
       unsubChat();
       roomWS.disconnect();
       clearTimeout(flushTimeoutRef.current);
     };
-  }, [room.id, excalidrawAPI]);
+  }, [currentRoom?.id, excalidrawAPI]);
 
   const handleCanvasChange = (elements) => {
     let hasChanges = false;
@@ -191,7 +262,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
   };
 
   const copyInvite = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/room/${room?.id || 'ws-1'}`);
+    navigator.clipboard.writeText(`${window.location.origin}/room/${currentRoom?.id || 'ws-1'}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -215,6 +286,55 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
     });
     setNewStickyText('');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-paper bg-notebook font-sketch text-2xl text-ink animate-pulse">
+        <Loader2 className="w-12 h-12 animate-spin text-accent mb-4" />
+        TRACING SKETCHBOOK...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-paper bg-notebook p-6 relative overflow-hidden">
+        {/* Hand-drawn decorative doodles */}
+        <svg className="absolute top-10 left-10 w-24 h-24 text-accent opacity-20 pointer-events-none hidden md:block" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+          <path d="M10,80 Q30,10 80,20 T90,90" />
+          <path d="M75,15 L85,20 L80,30" />
+        </svg>
+        <svg className="absolute bottom-12 right-12 w-32 h-32 text-accent-cyan opacity-20 pointer-events-none hidden md:block" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <circle cx="50" cy="50" r="35" strokeDasharray="5,5" />
+          <path d="M50,15 L50,85 M15,50 L85,50" />
+        </svg>
+
+        {/* Error Card */}
+        <div className="w-full max-w-md bg-white border-sketchy shadow-sketchy p-8 relative animate-paper text-center">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-2deg] opacity-90 shadow-sm pointer-events-none flex items-center justify-center font-hand text-xs text-ink/40">
+            ★ tape_02
+          </div>
+
+          <div className="flex justify-center text-accent mb-4">
+            <AlertCircle size={48} className="stroke-[1.5]" />
+          </div>
+
+          <h2 className="font-sketch text-2xl font-bold text-ink mb-2">PAGE NOT FOUND</h2>
+          
+          <p className="font-hand text-ink-muted text-base mb-6 leading-relaxed">
+            {error || 'This sketchbook page has been torn out, deleted, or you might not have access to it.'}
+          </p>
+
+          <button
+            onClick={onBack}
+            className="btn-sketchy bg-white text-ink flex items-center justify-center gap-2 py-3 w-full"
+          >
+            <ArrowLeft size={18} /> GO BACK
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-paper relative font-hand text-ink">
@@ -256,7 +376,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
 
           <div>
             <h1 className="font-sketch text-lg md:text-xl font-bold leading-none flex items-center gap-2">
-              <BookOpen size={20} /> {room?.name || 'Sketchbook Session'}
+              <BookOpen size={20} /> {currentRoom?.name || 'Sketchbook Session'}
             </h1>
             <span className="text-xs text-accent font-mono uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
               <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
@@ -273,14 +393,23 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
             </span>
             <div className="flex -space-x-1">
               <div className="w-8 h-8 rounded-full border border-ink bg-accent text-white flex items-center justify-center text-xs font-bold" title={`${displayName} (You)`}>
-                {displayName.substring(0, 1).toUpperCase()}
+                {displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
-              <div className="w-8 h-8 rounded-full border border-ink bg-accent-cyan text-white flex items-center justify-center text-xs font-bold" title="Ada">
-                D
-              </div>
-              <div className="w-8 h-8 rounded-full border border-ink bg-accent-green text-white flex items-center justify-center text-xs font-bold" title="Kai">
-                K
-              </div>
+              {Array.from(collaborators.entries()).map(([collabId, collab], idx) => {
+                const name = collab.username || 'Guest';
+                const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                const colors = ['bg-accent-cyan', 'bg-accent-green'];
+                const colorClass = colors[idx % colors.length];
+                return (
+                  <div
+                    key={collabId}
+                    className={`w-8 h-8 rounded-full border border-ink ${colorClass} text-white flex items-center justify-center text-xs font-bold`}
+                    title={name}
+                  >
+                    {initials}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

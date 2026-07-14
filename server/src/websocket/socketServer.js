@@ -1,7 +1,7 @@
 import { WebSocketServer } from 'ws';
 import { authenticateWebSocket } from '../middleware/auth.js';
 import { roomManager } from '../services/roomManager.js';
-import { subscribeToRoom, unsubscribeFromRoom, flushRoomSnapshotToDb } from '../services/redisService.js';
+import { subscribeToRoom, unsubscribeFromRoom, flushRoomSnapshotToDb, publishRoomEvent } from '../services/redisService.js';
 import { handleIncomingMessage, handleClusterBroadcast } from './eventHandlers.js';
 import { registerSocketHeartbeat, startHeartbeatMonitor } from './heartbeat.js';
 
@@ -99,6 +99,16 @@ export function initWebSocketServer(server) {
       
       // Unsubscribe from Redis pub/sub channel for this room callback
       await unsubscribeFromRoom(roomId, clusterCallback);
+
+      // Broadcast user leave event
+      await publishRoomEvent(roomId, {
+        senderNodeId: 'server',
+        senderSocketId: socketId,
+        type: 'USER_LEAVE',
+        payload: {
+          userId: user.userId
+        }
+      });
 
       // If no clients left in the room on this node, flush snapshot to database immediately
       if (!roomManager.isRoomActive(roomId)) {
