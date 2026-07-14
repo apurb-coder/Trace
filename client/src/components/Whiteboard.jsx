@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Excalidraw } from '@excalidraw/excalidraw';
+import { Excalidraw, viewportCoordsToSceneCoords } from '@excalidraw/excalidraw';
 import '@excalidraw/excalidraw/index.css';
 import { ArrowLeft, Users, Link2, Send, MessageSquare, BookOpen, Pin, Loader2, AlertCircle } from 'lucide-react';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
@@ -247,10 +247,10 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
 
   const handlePointerMove = (e) => {
     if (!excalidrawAPI) return;
-    const sceneCoords = excalidrawAPI.viewportCoordsToSceneCoords({
-      clientX: e.clientX,
-      clientY: e.clientY,
-    });
+    const sceneCoords = viewportCoordsToSceneCoords(
+      { clientX: e.clientX, clientY: e.clientY },
+      excalidrawAPI.getAppState()
+    );
     if (sceneCoords) {
       roomWS.send('PRESENCE', {
         presence: {
@@ -395,7 +395,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
               <div className="w-8 h-8 rounded-full border border-ink bg-accent text-white flex items-center justify-center text-xs font-bold" title={`${displayName} (You)`}>
                 {displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
-              {Array.from(collaborators.entries()).map(([collabId, collab], idx) => {
+              {Array.from(collaborators.entries()).slice(0, 5).map(([collabId, collab], idx) => {
                 const name = collab.username || 'Guest';
                 const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
                 const colors = ['bg-accent-cyan', 'bg-accent-green'];
@@ -410,6 +410,14 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
                   </div>
                 );
               })}
+              {collaborators.size > 5 && (
+                <div
+                  className="w-8 h-8 rounded-full border border-ink bg-ink text-white flex items-center justify-center text-xs font-bold"
+                  title={`${collaborators.size - 5} more collaborators`}
+                >
+                  +{collaborators.size - 5}
+                </div>
+              )}
             </div>
           </div>
 

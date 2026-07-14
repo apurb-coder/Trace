@@ -20,14 +20,15 @@ class RoomWebSocket {
     const wsURL = apiURL.replace(/^http/, 'ws');
     const url = `${wsURL}/connect/${roomId}?token=${encodeURIComponent(this.token)}`;
 
-    this.socket = new WebSocket(url);
+    const ws = new WebSocket(url);
+    this.socket = ws;
 
-    this.socket.onopen = () => {
+    ws.onopen = () => {
       console.log(`[WS] Connected to room ${roomId}`);
       this.send('INITIALIZE_ROOM', {});
     };
 
-    this.socket.onmessage = (event) => {
+    ws.onmessage = (event) => {
       try {
         const { type, payload } = JSON.parse(event.data);
         const callbacks = this.listeners.get(type);
@@ -39,16 +40,16 @@ class RoomWebSocket {
       }
     };
 
-    this.socket.onclose = () => {
+    ws.onclose = () => {
       console.log('[WS] Connection closed');
-      if (!this.isClosedIntentionally) {
+      if (this.socket === ws && !this.isClosedIntentionally) {
         // Auto reconnect after 3 seconds
         clearTimeout(this.reconnectTimer);
         this.reconnectTimer = setTimeout(() => this.connect(roomId), 3000);
       }
     };
 
-    this.socket.onerror = (error) => {
+    ws.onerror = (error) => {
       console.error('[WS Error]', error);
     };
   }
