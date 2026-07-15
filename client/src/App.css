@@ -1,17 +1,4 @@
 /* App-specific custom transitions or keyframe animations */
-@keyframes scribbleEnter {
-  from {
-    stroke-dashoffset: 200;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.animate-scribble {
-  stroke-dasharray: 200;
-  animation: scribbleEnter 0.8s ease-out forwards;
-}
 
 @keyframes paperSlide {
   from {

@@ -5,7 +5,6 @@ import apiClient from '../services/api';
 export const useAuthStore = create((set, get) => ({
   user: null,
   token: null,
-  isAuthenticated: false,
   loading: true,
 
   // 1. Initialize session and listen for auth changes
@@ -14,7 +13,7 @@ export const useAuthStore = create((set, get) => ({
       if (session) {
         get().handleSession(session);
       } else {
-        set({ user: null, token: null, isAuthenticated: false, loading: false });
+        set({ user: null, token: null, loading: false });
       }
     });
 
@@ -22,7 +21,7 @@ export const useAuthStore = create((set, get) => ({
       if (session) {
         await get().handleSession(session);
       } else {
-        set({ user: null, token: null, isAuthenticated: false, loading: false });
+        set({ user: null, token: null, loading: false });
       }
     });
 
@@ -43,7 +42,6 @@ export const useAuthStore = create((set, get) => ({
           name: metadata.name || session.user.email?.split('@')[0] || 'User',
           avatar: metadata.avatar || 'pencil'
         },
-        isAuthenticated: true,
         loading: false
       });
     } catch {
@@ -57,7 +55,6 @@ export const useAuthStore = create((set, get) => ({
           role: metadata.role || 'Designer',
           avatar: metadata.avatar || 'pencil'
         },
-        isAuthenticated: true,
         loading: false
       });
     }
@@ -110,7 +107,7 @@ export const useAuthStore = create((set, get) => ({
     } catch {
       // ignore
     } finally {
-      set({ user: null, token: null, isAuthenticated: false, loading: false });
+      set({ user: null, token: null, loading: false });
     }
   }
 }));
