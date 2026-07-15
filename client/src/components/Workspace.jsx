@@ -13,6 +13,8 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState('');
 
+  const [deleteId, setDeleteId] = useState(null);
+
   useEffect(() => {
     let active = true;
     const load = async () => {
@@ -45,15 +47,20 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
     }
   };
 
-  const handleDelete = async (id, e) => {
+  const handleDelete = (id, e) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to tear this sketchbook page?')) {
-      try {
-        await deleteRoom(id);
-        setWorkspaces(workspaces.filter((w) => w.id !== id));
-      } catch (err) {
-        console.error('[Delete Room Error]', err);
-      }
+    setDeleteId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteRoom(deleteId);
+      setWorkspaces(workspaces.filter((w) => w.id !== deleteId));
+    } catch (err) {
+      console.error('[Delete Room Error]', err);
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -290,6 +297,41 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {deleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 backdrop-blur-xs p-4">
+          <div className="bg-white border-sketchy shadow-sketchy p-6 w-full max-w-md animate-paper relative">
+            {/* Corner Tape details */}
+            <div className="absolute -top-3 left-1/3 w-24 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-2deg] pointer-events-none"></div>
+
+            <h3 className="font-sketch text-2xl font-bold mb-4 text-accent flex items-center gap-2">
+              <Trash2 size={24} /> Tear Sketchbook Page?
+            </h3>
+
+            <p className="font-hand text-lg text-ink mb-6">
+              Are you sure you want to tear <strong className="text-accent underline-sketchy">"{workspaces.find(w => w.id === deleteId)?.name}"</strong>? This drawing pad will be gone forever!
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setDeleteId(null)}
+                className="btn-sketchy bg-white text-ink py-2 px-4"
+              >
+                ABORT
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="btn-sketchy btn-sketchy-accent text-white py-2 px-6 shadow-sketchy flex items-center justify-center gap-2"
+              >
+                <Trash2 size={18} /> TEAR PAGE
+              </button>
+            </div>
           </div>
         </div>
       )}
