@@ -79,7 +79,7 @@ export default function RoomLoader({ user, onSelectRoom, onNavigate }) {
 
       {/* Error Card */}
       <div className="w-full max-w-md bg-white border-sketchy shadow-sketchy p-8 relative animate-paper text-center">
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-2deg] opacity-90 shadow-sm pointer-events-none flex items-center justify-center font-hand text-xs text-ink/40">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] -rotate-2 opacity-90 shadow-sm pointer-events-none flex items-center justify-center font-hand text-xs text-ink/40">
           ★ tape_02
         </div>
 

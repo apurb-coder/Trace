@@ -130,7 +130,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Left Side Info Panel */}
         <div className="lg:col-span-1 bg-white border-sketchy shadow-sketchy p-6 h-fit relative">
-          <div className="absolute -top-3 left-10 w-16 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-3deg] pointer-events-none"></div>
+          <div className="absolute -top-3 left-10 w-16 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] -rotate-3 pointer-events-none"></div>
 
           <h3 className="font-sketch text-lg font-bold mb-4 flex items-center gap-2">
             <StickyNote size={20} /> Quick Notes
@@ -194,7 +194,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
                           type="text"
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
-                          className="input-sketchy font-hand text-sm py-1 flex-grow"
+                          className="input-sketchy font-hand text-sm py-1 grow"
                           autoFocus
                         />
                         <button type="submit" className="btn-sketchy-thin bg-accent text-white px-2 text-xs">Save</button>
@@ -220,7 +220,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
                       {(ws.members || [user?.name?.substring(0, 1).toUpperCase() || 'U']).map((m, idx) => (
                         <div
                           key={idx}
-                          className="w-7 h-7 rounded-full border border-ink bg-[#f4f0e6] flex items-center justify-center text-xs font-bold text-ink shadow-sm"
+                          className="w-7 h-7 rounded-full border border-ink bg-paper-dark flex items-center justify-center text-xs font-bold text-ink shadow-sm"
                           title={`User ${m}`}
                         >
                           {m}
@@ -260,7 +260,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 backdrop-blur-xs p-4">
           <div className="bg-white border-sketchy shadow-sketchy p-6 w-full max-w-md animate-paper relative">
             {/* Corner Tape details */}
-            <div className="absolute -top-3 left-1/3 w-24 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-2deg] pointer-events-none"></div>
+            <div className="absolute -top-3 left-1/3 w-24 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] -rotate-2 pointer-events-none"></div>
 
             <h3 className="font-sketch text-2xl font-bold mb-4 flex items-center gap-2">
               <PlusCircle size={24} /> Initialize Blank Canvas
@@ -306,7 +306,7 @@ export default function Workspace({ user, onSelectRoom, onLogout, onNavigate }) 
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 backdrop-blur-xs p-4">
           <div className="bg-white border-sketchy shadow-sketchy p-6 w-full max-w-md animate-paper relative">
             {/* Corner Tape details */}
-            <div className="absolute -top-3 left-1/3 w-24 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-2deg] pointer-events-none"></div>
+            <div className="absolute -top-3 left-1/3 w-24 h-6 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] -rotate-2 pointer-events-none"></div>
 
             <h3 className="font-sketch text-2xl font-bold mb-4 text-accent flex items-center gap-2">
               <Trash2 size={24} /> Tear Sketchbook Page?

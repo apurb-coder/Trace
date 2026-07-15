@@ -126,6 +126,29 @@ html, body, #root {
 }
 
 
+
+.btn-sketchy-thin {
+  border: 2px solid var(--color-ink);
+  border-radius: 4px 12px 6px 10px / 10px 4px 12px 6px;
+  font-family: var(--font-sketch);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  user-select: none;
+}
+
+.btn-sketchy-thin:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0px 0px var(--color-ink);
+}
+
+.btn-sketchy-thin:active {
+  transform: translate(0px, 0px);
+  box-shadow: 0px 0px 0px 0px var(--color-ink);
+}
+
+
 /* Scratchy cross-out effect for disabled states */
 .btn-sketchy:disabled {
   opacity: 0.6;

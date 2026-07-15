@@ -311,7 +311,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
 
         {/* Error Card */}
         <div className="w-full max-w-md bg-white border-sketchy shadow-sketchy p-8 relative animate-paper text-center">
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] rotate-[-2deg] opacity-90 shadow-sm pointer-events-none flex items-center justify-center font-hand text-xs text-ink/40">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-[#f1ebd9]/80 border-t border-b border-[#e6deca] -rotate-2 opacity-90 shadow-sm pointer-events-none flex items-center justify-center font-hand text-xs text-ink/40">
             ★ tape_02
           </div>
 
@@ -424,7 +424,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
           <button
             onClick={() => setShowCollabNotes(!showCollabNotes)}
             className={`btn-sketchy flex items-center gap-1.5 text-sm py-1.5 px-3 transition-colors ${
-              showCollabNotes ? '!bg-accent !text-white border-ink' : 'bg-white text-ink'
+              showCollabNotes ? 'bg-accent! text-white! border-ink' : 'bg-white text-ink'
             }`}
           >
             <MessageSquare size={16} /> {showCollabNotes ? 'HIDE NOTES' : 'SHOW NOTES'}
@@ -433,7 +433,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
           <button
             onClick={copyInvite}
             className={`btn-sketchy flex items-center gap-1.5 text-sm py-1.5 px-3 transition-colors ${
-              copied ? '!bg-accent-green !text-white border-accent-green' : 'bg-white text-ink'
+              copied ? 'bg-accent-green! text-white! border-accent-green' : 'bg-white text-ink'
             }`}
           >
             <Link2 size={16} /> {copied ? 'COPIED!' : 'SHARE LINK'}
@@ -442,14 +442,14 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
       </header>
 
       {/* Main Split Window */}
-      <div className="flex-grow flex relative overflow-hidden">
+      <div className="grow flex relative overflow-hidden">
         
 
 
 
 
         {/* Core Whiteboard Canvas (Sacred Canvas: Keep it clean and un-styled) */}
-        <div className="flex-grow h-full w-full relative z-0" onPointerMove={handlePointerMove}>
+        <div className="grow h-full w-full relative z-0" onPointerMove={handlePointerMove}>
           <Excalidraw
             excalidrawAPI={handleMount}
             theme="light"
@@ -481,7 +481,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
           showCollabNotes ? 'flex' : 'hidden'
         }`}>
           {/* Spine Binding tape header */}
-          <div className="absolute top-2 -left-3 w-6 h-12 bg-[#f1ebd9] border border-[#e6deca] rotate-[-90deg] opacity-75 shadow-sm pointer-events-none"></div>
+          <div className="absolute top-2 -left-3 w-6 h-12 bg-[#f1ebd9] border border-[#e6deca] -rotate-90 opacity-75 shadow-sm pointer-events-none"></div>
 
           <div className="p-4 border-b border-dashed border-ink/20 bg-paper">
             <h3 className="font-sketch text-lg font-bold flex items-center gap-2">
@@ -491,7 +491,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
           </div>
 
           {/* Stickies List */}
-          <div className="flex-grow overflow-y-auto p-4 space-y-4">
+          <div className="grow overflow-y-auto p-4 space-y-4">
             {stickies.map((sticky) => (
               <div
                 key={sticky.id}
@@ -512,7 +512,7 @@ export default function Whiteboard({ room, onBack, user, onNavigate }) {
               placeholder="Add sticky message..."
               value={newStickyText}
               onChange={(e) => setNewStickyText(e.target.value)}
-              className="flex-grow input-sketchy text-xs py-2 pr-2"
+              className="grow input-sketchy text-xs py-2 pr-2"
               required
             />
             <button
