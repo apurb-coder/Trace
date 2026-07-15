@@ -227,6 +227,9 @@ export async function deleteRoomSnapshot(roomId) {
  * @param {string} roomId
  */
 export function queueRoomDbSync(roomId) {
+  if (roomId.startsWith('guest-')) {
+    return;
+  }
   if (syncDebounceTimers.has(roomId)) {
     return;
   }
@@ -259,6 +262,10 @@ export async function flushRoomSnapshotToDb(roomId) {
   if (syncDebounceTimers.has(roomId)) {
     clearTimeout(syncDebounceTimers.get(roomId));
     syncDebounceTimers.delete(roomId);
+  }
+
+  if (roomId.startsWith('guest-')) {
+    return;
   }
 
   try {

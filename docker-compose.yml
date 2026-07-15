@@ -38,7 +38,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - NODE_ENV=production
-      - CORS_ORIGIN=*
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
       - RATE_LIMIT_WINDOW_MS=900000 # 15 mins
       - RATE_LIMIT_MAX=100
       - DATABASE_URL=postgresql://${POSTGRES_USER:-trace_user}:${POSTGRES_PASSWORD:-trace_password}@db:5432/${POSTGRES_DB:-trace_db}
@@ -61,7 +61,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - NODE_ENV=production
-      - CORS_ORIGIN=*
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
       - RATE_LIMIT_WINDOW_MS=900000 # 15 mins
       - RATE_LIMIT_MAX=100
       - DATABASE_URL=postgresql://${POSTGRES_USER:-trace_user}:${POSTGRES_PASSWORD:-trace_password}@db:5432/${POSTGRES_DB:-trace_db}

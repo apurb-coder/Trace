@@ -14,9 +14,21 @@ export default function RoomLoader({ user, onSelectRoom, onNavigate }) {
       try {
         setLoading(true);
         setError('');
-        const room = await fetchRoomById(roomId);
-        if (active) {
-          onSelectRoom(room);
+        if (roomId.startsWith('guest-')) {
+          if (active) {
+            onSelectRoom({
+              id: roomId,
+              name: 'Guest Sketchbook',
+              updated: 'Just now',
+              members: ['G'],
+              gridType: 'grid'
+            });
+          }
+        } else {
+          const room = await fetchRoomById(roomId);
+          if (active) {
+            onSelectRoom(room);
+          }
         }
       } catch (err) {
         console.error('[RoomLoader Error]', err);

@@ -116,28 +116,35 @@ export async function handleIncomingMessage(socket, rawData) {
         const author = payload.author ? xss(payload.author) : `Designer ${userId.substring(0, 4)}`;
         const color = payload.color ? xss(payload.color) : 'bg-accent/10';
 
-        // Save to PostgreSQL DB
-        const savedMessage = await prisma.message.create({
-          data: {
-            roomId,
-            userId,
-            author,
-            text: sanitizedText,
-            color,
-          }
-        });
+        let messageId = crypto.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}`;
+        let msgTimestamp = new Date();
+
+        if (!roomId.startsWith('guest-')) {
+          // Save to PostgreSQL DB
+          const savedMessage = await prisma.message.create({
+            data: {
+              roomId,
+              userId,
+              author,
+              text: sanitizedText,
+              color,
+            }
+          });
+          messageId = savedMessage.id;
+          msgTimestamp = savedMessage.timestamp;
+        }
 
         await publishRoomEvent(roomId, {
           senderNodeId: NODE_ID,
           senderSocketId: socketId,
           type: 'CHAT_MESSAGE',
           payload: {
-            id: savedMessage.id,
+            id: messageId,
             userId,
             author,
             text: sanitizedText,
             color,
-            timestamp: savedMessage.timestamp.getTime()
+            timestamp: msgTimestamp.getTime()
           }
         });
         break;
