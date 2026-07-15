@@ -76,7 +76,7 @@ export function initWebSocketServer(server) {
 
     // Create a specific, bound callback for routing Redis Pub/Sub messages back to this socket
     const clusterCallback = (eventPayload) => {
-      handleClusterBroadcast(roomId, eventPayload);
+      handleClusterBroadcast(socket, eventPayload);
     };
 
     // Subscribes this server node instance to Redis cluster updates for the room channel

@@ -1,6 +1,5 @@
 import xss from 'xss';
 import { getRoomSnapshot, patchRoomSnapshot, publishRoomEvent } from '../services/redisService.js';
-import { roomManager } from '../services/roomManager.js';
 import prisma from '../utils/prisma.js';
 
 // Generate a unique identifier for this application server node instance
@@ -164,29 +163,20 @@ export async function handleIncomingMessage(socket, rawData) {
  * Handles messages received from the Redis Pub/Sub subscription cluster.
  * Routes them to local room clients, skipping the socket that originally published the event.
  * 
- * @param {string} roomId 
+ * @param {import('ws').WebSocket} socket 
  * @param {object} eventPayload 
  */
-export function handleClusterBroadcast(roomId, eventPayload) {
+export function handleClusterBroadcast(socket, eventPayload) {
   const { senderSocketId, type, payload } = eventPayload;
   
-  // Fetch only the clients connected locally to this specific server node instance
-  const localClients = roomManager.getRoomClients(roomId);
-  
-  if (localClients.size === 0) return;
-
-  const outgoingPayload = JSON.stringify({
-    type,
-    payload
-  });
-
-  localClients.forEach((socket) => {
-    // Prevent loopback reflection: do not echo the message to the socket that sent it
-    if (socket.socketId !== senderSocketId) {
-      // Check if connection is still in OPEN state before transmitting
-      if (socket.readyState === 1) { // 1 = WebSocket.OPEN
-        socket.send(outgoingPayload);
-      }
+  // Prevent loopback reflection: do not echo the message to the socket that sent it
+  if (socket.socketId !== senderSocketId) {
+    // Check if connection is still in OPEN state before transmitting
+    if (socket.readyState === 1) { // 1 = WebSocket.OPEN
+      socket.send(JSON.stringify({
+        type,
+        payload
+      }));
     }
-  });
+  }
 }
