@@ -35,3 +35,4 @@ Thumbs.db
 
 # Docker files/directories (if needed to ignore specific local builds/data)
 redis_data/
+/Trace_obsidian-vault
