@@ -3,11 +3,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const redisConfig = {
-  host: process.env.REDIS_HOST || '127.0.0.1',
-  port: parseInt(process.env.REDIS_PORT || '6379', 10),
-  maxRetriesPerRequest: null, // Critical configuration when using Pub/Sub with ioredis
-};
+const redisConfig = process.env.REDIS_URL 
+  ? process.env.REDIS_URL 
+  : {
+      host: process.env.REDIS_HOST || '127.0.0.1',
+      port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      password: process.env.REDIS_PASSWORD || undefined,
+      maxRetriesPerRequest: null,
+    };
 
 // Create standard Redis client for general caching, state storage, and snapshots
 export const redisClient = new Redis(redisConfig);
