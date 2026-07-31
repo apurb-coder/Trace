@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertCircle, UserPlus } from 'lucide-react';
+import { AlertCircle, UserPlus, CheckCircle, Loader2 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 export default function Signup({ onRegister, onNavigate }) {
@@ -8,6 +8,8 @@ export default function Signup({ onRegister, onNavigate }) {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Designer');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const signUp = useAuthStore((state) => state.signUp);
 
   const handleSubmit = async (e) => {
@@ -16,18 +18,34 @@ export default function Signup({ onRegister, onNavigate }) {
       setError('Scribble down all the details to register!');
       return;
     }
+    if (password.length < 6) {
+      setError('Secret sketch (password) must be at least 6 characters!');
+      return;
+    }
     setError('');
+    setSuccess('');
+    setSubmitting(true);
     
-    const { error: signUpError } = await signUp(email, password, {
+    const { data, error: signUpError } = await signUp(email, password, {
       name,
       role,
       avatar: 'rocket'
     });
 
+    setSubmitting(false);
+
     if (signUpError) {
-      setError(signUpError.message || 'Registration failed!');
+      const msg = signUpError.message || '';
+      if (msg.includes('already registered')) {
+        setError('This ink (email) is already registered! Please sign in instead.');
+      } else {
+        setError(msg || 'Registration failed. Please check your details and try again.');
+      }
     } else {
-      onRegister();
+      setSuccess('★ Account created successfully! Synchronizing your sketchbook...');
+      setTimeout(() => {
+        onRegister();
+      }, 1200);
     }
   };
 
@@ -59,9 +77,16 @@ export default function Signup({ onRegister, onNavigate }) {
           </p>
         </div>
 
+        {success && (
+          <div className="mb-6 border-sketchy-thin border-emerald-600 text-emerald-700 bg-emerald-50 p-4 text-sm font-hand rounded flex items-center gap-2 animate-paper">
+            <CheckCircle size={20} className="text-emerald-600 shrink-0" />
+            <span>{success}</span>
+          </div>
+        )}
+
         {error && (
           <div className="mb-6 border-sketchy-thin border-accent text-accent bg-accent/5 p-4 text-sm font-hand rounded flex items-center gap-2">
-            <AlertCircle size={18} />
+            <AlertCircle size={18} className="shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -129,9 +154,18 @@ export default function Signup({ onRegister, onNavigate }) {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full btn-sketchy btn-sketchy-cyan text-lg flex items-center justify-center gap-2 py-3 shadow-sketchy"
+              disabled={submitting}
+              className="w-full btn-sketchy btn-sketchy-cyan text-lg flex items-center justify-center gap-2 py-3 shadow-sketchy disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <UserPlus size={20} /> CREATE FREE ACCOUNT
+              {submitting ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" /> CREATING ACCOUNT...
+                </>
+              ) : (
+                <>
+                  <UserPlus size={20} /> CREATE FREE ACCOUNT
+                </>
+              )}
             </button>
           </div>
         </form>

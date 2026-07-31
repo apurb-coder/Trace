@@ -62,7 +62,6 @@ export const useAuthStore = create((set, get) => ({
 
   // 3. User Sign-up
   signUp: async (email, password, additionalMetadata = {}) => {
-    set({ loading: true });
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -77,24 +76,20 @@ export const useAuthStore = create((set, get) => ({
           headers: { Authorization: `Bearer ${data.session.access_token}` }
         });
       }
-      set({ loading: false });
       return { data, error: null };
     } catch (err) {
-      set({ loading: false });
       return { data: null, error: err };
     }
   },
 
   // 4. Log in
   login: async (email, password) => {
-    set({ loading: true });
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       await get().handleSession(data.session);
       return { data, error: null };
     } catch (err) {
-      set({ loading: false });
       return { data: null, error: err };
     }
   },

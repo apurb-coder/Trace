@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { AlertCircle, LogIn } from 'lucide-react';
+import { AlertCircle, LogIn, Loader2 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 export default function Login({ onLogin, onNavigate }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const login = useAuthStore((state) => state.login);
 
   const handleSubmit = async (e) => {
@@ -15,9 +16,18 @@ export default function Login({ onLogin, onNavigate }) {
       return;
     }
     setError('');
+    setSubmitting(true);
+
     const { error: loginError } = await login(email, password);
+    setSubmitting(false);
+
     if (loginError) {
-      setError(loginError.message || 'Invalid secret sketch or ink!');
+      const msg = loginError.message || '';
+      if (msg.includes('Invalid login credentials')) {
+        setError('Invalid ink or secret sketch! Please check your email and password.');
+      } else {
+        setError(msg || 'Authentication failed. Please verify your credentials and try again.');
+      }
     } else {
       onLogin();
     }
@@ -107,9 +117,18 @@ export default function Login({ onLogin, onNavigate }) {
 
           <button
             type="submit"
-            className="w-full btn-sketchy btn-sketchy-accent text-lg flex items-center justify-center gap-2 py-3 shadow-sketchy"
+            disabled={submitting}
+            className="w-full btn-sketchy btn-sketchy-accent text-lg flex items-center justify-center gap-2 py-3 shadow-sketchy disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LogIn size={20} /> ENTER WORKSPACE
+            {submitting ? (
+              <>
+                <Loader2 size={20} className="animate-spin" /> SYNCHRONIZING...
+              </>
+            ) : (
+              <>
+                <LogIn size={20} /> ENTER WORKSPACE
+              </>
+            )}
           </button>
         </form>
 
