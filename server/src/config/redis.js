@@ -3,28 +3,27 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const redisConfig = process.env.REDIS_URL 
-  ? process.env.REDIS_URL 
-  : {
-      host: process.env.REDIS_HOST || '127.0.0.1',
-      port: parseInt(process.env.REDIS_PORT || '6379', 10),
-      password: process.env.REDIS_PASSWORD || undefined,
-      maxRetriesPerRequest: null,
-    };
-
-// Create standard Redis client for general caching, state storage, and snapshots
-export const redisClient = new Redis(redisConfig);
-
+const createRedisInstance = () => {
+  if (process.env.REDIS_URL) {
+    return new Redis(process.env.REDIS_URL, { maxRetriesPerRequest: null });
+  }
+  return new Redis({
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    password: process.env.REDIS_PASSWORD || undefined,
+    maxRetriesPerRequest: null,
+  });
+};
+// Create standard Redis client for general caching, state storage, and snaps
+export const redisClient = createRedisInstance();
 // Create dedicated Redis client for publishing pub/sub messages
-export const redisPub = new Redis(redisConfig);
-
+export const redisPub = createRedisInstance();
 // Create dedicated Redis client for subscribing to pub/sub channels
-export const redisSub = new Redis(redisConfig);
+export const redisSub = createRedisInstance();
 
-// Helper to attach lifecycle logging to client instances
 const attachLogging = (client, name) => {
   client.on('connect', () => {
-    console.log(`[Redis] ${name} client successfully connected to redis://${redisConfig.host}:${redisConfig.port}`);
+    console.log(`[Redis] ${name} client successfully connected`);
   });
 
   client.on('error', (err) => {
